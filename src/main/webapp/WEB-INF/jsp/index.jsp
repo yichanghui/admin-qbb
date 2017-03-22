@@ -8,7 +8,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
 <base href="<%=basePath%>">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>家视天下播控平台</title>
+<title>中讯担保</title>
 <jsp:include page="../jsp_css/commoncss.jsp"></jsp:include>
 <script type="text/javascript" src="js/common/jquery/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="js/common/jquery/jquery.easyui.min.js"></script>

@@ -8,7 +8,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
 <base href="<%=basePath%>">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>家视天下云平台</title>
+<title>家视天下</title>
 <link rel="stylesheet" type="text/css" href="css/all.css" />
 <script type="text/javascript" src="js/common/jquery/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="js/common/user_login.js"></script>
@@ -61,7 +61,7 @@ function locationCenter(){
 </form>
 </div>
 <div style="clear:both;"></div>
-<div id="Copyright">家视天下 &copy; 2013 hiveview.com</div>
+<div id="Copyright">中讯担保 &copy; 2017 hiveview.com</div>
 </div>
 </div>
 </body>

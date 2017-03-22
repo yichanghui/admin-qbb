@@ -5,5 +5,5 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 %>
 <base href="<%=basePath%>">
 <div data-options="region:'center',title:'欢迎页面'">
-<h1 style="width:100%;text-align: center">家视天下<br />蜂巢TV播控平台</h1>
+<h1 style="width:100%;text-align: center">家视天下<br />管理平台</h1>
 </div>

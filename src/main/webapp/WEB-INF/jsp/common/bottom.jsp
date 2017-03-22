@@ -9,7 +9,7 @@ line-height: 30px;
 </style>
 <div style="clear:both;"></div>
 <div data-options="region:'south',border:false" class="bottomCss">
-<span id="Copyright" style="color:#FFFFFF;">家视天下 &copy; 2013 hiveview.com</span>
+<span id="Copyright" style="color:#FFFFFF;">中讯担保 &copy; 2013 hiveview.com</span>
 </div>
 <!-- bottom -->
 <script>	
