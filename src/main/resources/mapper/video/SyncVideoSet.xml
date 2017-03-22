@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="SyncVideoSetMapper">
+	<resultMap id="syncVideosetMap" type="com.hiveview.entity.video.SyncVideoSet">
+		<id column="videoset_id" property="videosetId" jdbcType="VARCHAR" />
+		<result column="videoset_name" property="videosetName" jdbcType="VARCHAR" />
+		<result column="videoset_img" property="videosetImg" jdbcType="VARCHAR" />
+		<result column="videoset_focus" property="videosetFocus" jdbcType="VARCHAR" />
+		<result column="videoset_brief" property="videosetBrief" jdbcType="VARCHAR" />
+		<result column="keyword" property="keyWord" jdbcType="VARCHAR" />
+		<result column="cp_videoset_id" property="cpVideosetId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="videoset_type" property="videosetType" jdbcType="INTEGER" />
+		<result column="is_effective" property="isEffective" jdbcType="INTEGER" />
+		<result column="videoset_total" property="videosetTotal" jdbcType="INTEGER" />
+		<result column="is_suetime" property="isSuetime" jdbcType="VARCHAR" />
+		<result column="director" property="director" jdbcType="VARCHAR" />
+		<result column="actors" property="actors" jdbcType="VARCHAR" />
+		<result column="tag" property="tag" jdbcType="VARCHAR" />
+		<result column="py_name" property="pyName" jdbcType="VARCHAR" />
+		<result column="cp" property="cp" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="getSyncVideoSetByPage" parameterType="map" resultMap="syncVideosetMap">
+		SELECT * FROM sync_video_set
+		<where>
+			<if test="syncVideoset!=null">
+				<if test="syncVideoset.videosetId!=null">
+					and  videoset_id = #{syncVideoset.videosetId,jdbcType=VARCHAR}
+				</if>
+			
+				<if test="syncVideoset.videosetName!=null">
+					and videoset_name  like CONCAT('%',#{syncVideoset.videosetName},'%')
+				</if>
+			
+				<if test="syncVideoset.videosetType!=null">
+					and videoset_type = #{syncVideoset.videosetType,jdbcType=INTEGER}
+				</if>
+				<if test="syncVideoset.isEffective!=null">
+					and is_effective = #{syncVideoset.isEffective,jdbcType=INTEGER}
+				</if>
+			</if>
+			
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(videoset_id) FROM sync_video_set
+		<where>
+			<if test="syncVideoset!=null">
+				<if test="syncVideoset.videosetId!=null">
+					and  videoset_id = #{syncVideoset.videosetName,jdbcType=VARCHAR}
+				</if>
+			
+				<if test="syncVideoset.videosetName!=null">
+					and videoset_name  like CONCAT('%',#{syncVideoset.videosetName},'%')
+				</if>
+			
+				<if test="syncVideoset.videosetType!=null">
+					and videoset_type = #{syncVideoset.videosetType,jdbcType=INTEGER}
+				</if>
+				<if test="syncVideoset.isEffective!=null">
+					and is_effective = #{syncVideoset.isEffective,jdbcType=INTEGER}
+				</if>
+			</if>
+		</where>
+	</select>
+</mapper>

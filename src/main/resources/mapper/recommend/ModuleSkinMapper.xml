@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.recommend.ModuleSkinDao">
+
+<sql id="table">
+	module_skin
+</sql>
+	<sql id="selectColumns">
+	    <![CDATA[
+		recom_type AS recomType,img_url_inside AS imgUrlInside,img_url_outside AS imgUrlOutside
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<if test="backgroundRecom != null">
+			<where>
+		       <if test="backgroundrecom.recomType != null">
+					AND recom_type = #{recomType}
+				</if>
+			</where>
+		</if>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.recommend.ModuleSkin">
+        INSERT INTO <include refid="table" /> (
+        	recom_type ,
+        	img_url_inside ,
+        	img_url_outside ,
+        	create_time
+        ) VALUES (
+        	#{recomType} ,
+        	#{imgUrlInside} ,
+        	#{imgUrlOutside} ,
+        	NOW()
+        )
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.recommend.ModuleSkin">
+        UPDATE <include refid="table" />  SET
+	        img_url_inside = #{imgUrlInside} ,
+	        img_url_outside = #{imgUrlOutside}
+        WHERE 
+	         recom_type = #{recomType}
+	</update>
+    <delete id="delete">
+        DELETE FROM <include refid="table" />  WHERE
+         recom_type = #{recomType}
+    </delete>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(1) FROM <include refid="table" /> 
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.recommend.ModuleSkin">
+    	SELECT <include refid="selectColumns" />
+	    FROM <include refid="table" /> 
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

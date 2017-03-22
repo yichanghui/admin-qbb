@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="AppDeveloperMapper">
+	<resultMap id="AppDeveloperMap" type="com.hiveview.entity.app.AppDeveloper">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="developer_name" property="developerName" jdbcType="VARCHAR" />
+		<result column="state"  property="state" jdbcType="INTEGER"/>
+		<result column="create_time"  property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time"  property="updateTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<select id="getDeveloperList" parameterType="map" resultMap="AppDeveloperMap">
+		SELECT * FROM app_developer
+		<where>
+		<if test="developer!=null">
+			<if test="developer.developerName!=null">
+				AND developer_name LIKE CONCAT ('%',#{developer.developerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="developer.state!=null">
+				AND state = #{developer.state,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		ORDER BY create_time ASC LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<select id="getCount" parameterType="AppDeveloper" resultType="int">
+		SELECT COUNT(*) FROM app_developer
+		<where>
+			<if test="developerName!=null">
+				AND developer_name LIKE CONCAT ('%',#{developerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="state!=null">
+				AND state = #{state,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<update id="update" parameterType="AppDeveloper">
+		UPDATE app_developer
+		<set>
+		update_time=#{updateTime,jdbcType=TIMESTAMP},
+		<if test="developerName!=null">
+		developer_name=#{developerName,jdbcType=VARCHAR},
+		</if>
+		<if test="state!=null">
+		state=#{state,jdbcType=INTEGER},
+		</if>
+		</set>
+		WHERE id=#{id,jdbcType=INTEGER}
+	</update>
+
+	<insert id="save" parameterType="AppDeveloper" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO app_developer (developer_name,state,create_time) VALUES	(#{developerName},#{state},#{createTime})
+	</insert>
+	
+</mapper>

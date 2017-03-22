@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AppMapper">
+	<resultMap id="AppMap" type="com.hiveview.entity.app.App">
+		<id column="app_id" property="appId" jdbcType="INTEGER" />
+		<result column="app_name" property="appName" jdbcType="VARCHAR" />
+		<result column="app_icon"  property="appIcon" jdbcType="VARCHAR"/>
+		<result column="developer_id"  property="developerId" jdbcType="INTEGER"/>
+		<result column="developer_name"  property="developerName" jdbcType="VARCHAR"/>
+		<result column="developer"  property="developer" jdbcType="VARCHAR"/>
+		<result column="app_describe"  property="appDescribe" jdbcType="VARCHAR"/>
+		<result column="bundle_id"  property="bundleId" jdbcType="VARCHAR"/>
+		<result column="tag_name"  property="tagName" jdbcType="VARCHAR"/>
+		<result column="seq"  property="seq" jdbcType="INTEGER"/>
+		<result column="state"  property="state" jdbcType="INTEGER"/>
+		<result column="create_time"  property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time"  property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="app_type"  property="appType" jdbcType="INTEGER"/>
+		<result column="latest_version"  property="latestVersion" jdbcType="VARCHAR"/>
+		<result column="is_pay"  property="isPay" jdbcType="INTEGER"/>
+		<result column="py_name"  property="pyName" jdbcType="VARCHAR"/>
+		<result column="usb_device"  property="usbDevice" jdbcType="VARCHAR"/>
+		<result column="category_id"  property="categoryId" jdbcType="INTEGER"/>
+	</resultMap>
+	<resultMap id="AppOperateHistoryMap" type="com.hiveview.entity.app.AppOperateHistory">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="operate_time"  property="operateTime" jdbcType="TIMESTAMP"/>
+		<result column="app_id"  property="appId" jdbcType="INTEGER"/>
+		<result column="account"  property="account" jdbcType="VARCHAR"/>
+		<result column="operate_record"  property="operateRecord" jdbcType="VARCHAR"/>
+		<result column="operate_type"  property="operateType" jdbcType="INTEGER"/>
+	</resultMap>
+		<resultMap id="AppTagRelateMap" type="com.hiveview.entity.app.AppTagRelate">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="app_id"  property="operateTime" jdbcType="INTEGER"/>
+		<result column="catetory_id"  property="categoryId" jdbcType="INTEGER"/>
+		<result column="tag_id"  property="tagId" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<select id="getAppList" parameterType="map" resultMap="AppMap">
+		SELECT t1.app_id AS appId,t1.seq AS seq,t1.bundle_id AS bundleId,t1.app_name AS appName,t1.app_icon AS appIcon,t1.app_type AS appType,t1.tag_name AS tagName,t1.state AS state,t1.developer_id AS developerId,t1.app_describe AS appDescribe,t1.latest_version AS latestVersion,t1.is_pay AS isPay,t1.usb_device AS usbDevice,t1.category_id AS categoryId
+		FROM app t1 LEFT JOIN app_tag_relate t2 ON t1.app_id=t2.app_id
+		<where>
+		<if test="app!=null">
+			<if test="app.categoryId!=null">
+				AND t2.category_id = #{app.categoryId}
+			</if>
+			<if test="app.appName!=null">
+				AND app_name LIKE CONCAT ('%',#{app.appName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="app.state!=null">
+				AND state = #{app.state,jdbcType=INTEGER}
+			</if>
+			<if test="app.appType!=null">
+				AND app_type = #{app.appType,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		ORDER BY seq ASC,create_time ASC LIMIT #{currentPage},#{pageSize}
+	</select>
+	<select id="getAppListClassify" parameterType="map" resultMap="AppMap">
+		SELECT t1.app_id AS appId,t1.app_name AS appName,t1.app_icon AS appIcon FROM app t1 LEFT JOIN (SELECT app_id,category_id FROM app_tag_relate GROUP BY app_id,category_id) t2 ON t1.app_id = t2.app_id LEFT JOIN app_category t3 ON t2.category_id = t3.category_id
+		WHERE t3.category_id = #{categoryId} 
+		<if test="appName!=null"> AND app_name LIKE CONCAT ('%',#{app.appName,jdbcType=VARCHAR},'%') </if> 
+		ORDER BY t1.create_time ASC LIMIT #{currentPage},#{pageSize}
+	</select>
+	<select id="getAppListClassifyCount" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM app t1 LEFT JOIN (SELECT app_id,category_id FROM app_tag_relate GROUP BY app_id,category_id) t2 ON t1.app_id = t2.app_id LEFT JOIN app_category t3 ON t2.category_id = t3.category_id
+		WHERE t3.category_id = #{categoryId} 
+		<if test="appName!=null"> AND app_name LIKE CONCAT ('%',#{app.appName,jdbcType=VARCHAR},'%') </if>
+	</select>
+	
+	<select id="getCount" parameterType="App" resultType="int">
+		SELECT COUNT(1) FROM app t1 LEFT JOIN app_tag_relate t2 ON t1.app_id=t2.app_id
+		<where>
+			<if test="categoryId!=null">
+				AND t2.category_id = #{categoryId}
+			</if>
+			<if test="appName!=null">
+				AND app_name LIKE CONCAT ('%',#{appName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="state!=null">
+				AND state = #{state,jdbcType=INTEGER}
+			</if>
+			<if test="appType!=null">
+				AND app_type = #{appType,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAppById" parameterType="int" resultMap="AppMap">
+		SELECT * FROM app WHERE app_id=#{appId}
+	</select>
+	
+	<update id="update" parameterType="App">
+		UPDATE app
+		<set>
+		update_time=#{updateTime,jdbcType=TIMESTAMP},
+		<if test="appName!=null">
+		app_name=#{appName,jdbcType=VARCHAR},
+		</if>
+		<if test="appIcon!=null">
+		app_icon=#{appIcon,jdbcType=VARCHAR},
+		</if>
+		<if test="developerId!=null">
+		developer_id=#{developerId,jdbcType=INTEGER},
+		</if>
+		<if test="developer!=null">
+		developer=#{developer,jdbcType=VARCHAR},
+		</if>
+		<if test="bundleId!=null">
+		bundle_id=#{bundleId,jdbcType=VARCHAR},
+		</if>
+		<if test="tagName!=null">
+		tag_name=#{tagName,jdbcType=VARCHAR},
+		</if>
+		<if test="state!=null">
+		state=#{state,jdbcType=INTEGER},
+		</if>
+		<if test="seq!=null">
+		seq=#{seq,jdbcType=INTEGER},
+		</if>
+		<if test="appType!=null">
+		app_type=#{appType,jdbcType=INTEGER},
+		</if>
+		<if test="latestVersion!=null">
+		latest_version=#{latestVersion,jdbcType=VARCHAR},
+		</if>
+		<if test="isPay!=null">
+		is_pay=#{isPay,jdbcType=INTEGER},
+		</if>
+		<if test="pyName!=null">
+		py_name=#{pyName,jdbcType=VARCHAR},
+		</if>
+		<if test="appDescribe!=null">
+		app_describe=#{appDescribe,jdbcType=VARCHAR},
+		</if>
+		<if test="usbDevice!=null">
+		usb_device=#{usbDevice,jdbcType=VARCHAR},
+		</if>
+		<if test="categoryId!=null">
+		category_id=#{categoryId,jdbcType=VARCHAR}
+		</if>
+		</set>
+		WHERE app_id=#{appId,jdbcType=INTEGER}
+	</update>
+
+	<insert id="save" parameterType="App" useGeneratedKeys="true" keyProperty="appId">
+		INSERT INTO app
+		(app_name,app_icon,developer_id,developer,bundle_id,tag_name,state,seq,create_time,app_type,app_describe,is_pay,py_name,usb_device,category_id)
+		VALUES	(#{appName},#{appIcon},#{developerId},#{developer},#{bundleId},#{tagName},#{state},#{seq},#{createTime},#{appType},#{appDescribe},#{isPay},#{pyName},#{usbDevice},#{categoryId})
+	</insert>
+	
+	<update id="delete" parameterType="int">
+		UPDATE app set state = 0 WHERE app_id=#{appId}
+	</update>
+	
+	
+	
+	<select id="getAppOperateHistoryList" parameterType="map" resultType="HashMap">
+		SELECT id,account,operate_time AS operateTime,a.app_id AS appId,app_name AS appName,operate_record AS operateRecord FROM app_operate_history AS h LEFT JOIN app a ON h.app_id = a.app_id
+		<where>
+		<if test="history!=null">
+			<if test="history.account!=null">
+				AND account LIKE CONCAT ('%',#{history.account,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="history.appId!=null">
+				AND h.app_id=#{history.appId,jdbcType=VARCHAR}
+			</if>
+			<if test="history.operateType!=null">
+				AND operate_type=#{history.operateType,jdbcType=VARCHAR}
+			</if>
+		</if>
+		</where>
+		ORDER BY operate_time DESC LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<select id="getCountForOperateHistory" parameterType="App" resultType="int">
+		SELECT COUNT(*) FROM app_operate_history AS h LEFT JOIN app a ON h.app_id = a.app_id
+		<where>
+			<if test="account!=null">
+				AND account LIKE CONCAT ('%',#{account,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="appId!=null">
+				AND h.app_id=#{appId,jdbcType=VARCHAR}
+			</if>
+			<if test="operateType!=null">
+				AND operate_type=#{operateType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<insert id="saveOperateHistory" parameterType="AppOperateHistory" useGeneratedKeys="true">
+		INSERT INTO app_operate_history (operate_type,account,app_id,operate_record) VALUES (#{operateType},#{account},#{appId},#{operateRecord})
+	</insert>
+	
+	
+	
+	
+	<insert id="saveAppTagRelate" parameterType="AppTagRelate">
+		INSERT INTO app_tag_relate (app_id,category_id,tag_id) VALUES (#{appId},#{categoryId},#{tagId})
+	</insert>
+	
+	<delete id="deleteAppTagRelate" parameterType="Long">
+		DELETE FROM app_tag_relate WHERE app_id=#{appId}
+	</delete>
+	
+	<select id="getAppInfo" parameterType="App" resultMap="AppMap">
+		SELECT 
+			app_name,app_icon,developer_id,developer,app_describe,bundle_id,tag_name,state,app_type,latest_version,is_pay,py_name 
+		FROM app 
+		<where>
+			<if test="appId != null">
+				and app_id = #{appId}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- ============================================================== -->
+	<sql id="selectColumnsAppRecommond">
+	    <![CDATA[
+		t1.app_id AS appId,t1.seq AS seq,t1.bundle_id AS bundleId,t1.app_name AS appName,t1.app_icon AS appIcon,t1.app_type AS appType,t1.tag_name AS tagName,t1.state AS state,t1.developer_id AS developerId,t1.app_describe AS appDescribe,t1.latest_version AS latestVersion,t1.is_pay AS isPay,t1.usb_device AS usbDevice,t1.category_id AS categoryId
+	    ]]>
+	</sql>
+	<!-- 查询过滤后的应用_应用焦点图管理 -->
+	<select id="getAppListForAppfocus" parameterType="map" resultMap="AppMap">
+		SELECT <include refid="selectColumnsAppRecommond" />
+		FROM app t1
+		<where>
+		app_id NOT IN (SELECT content_id FROM app_focus WHERE category_id = #{categoryId}) AND category_id = #{categoryId}
+		<if test="appName!=null">
+			AND app_name LIKE CONCAT ('%',#{appName,jdbcType=VARCHAR},'%')
+		</if>
+		</where>
+		ORDER BY seq ASC,create_time ASC 
+		LIMIT #{currentPage},#{pageSize}
+	</select>
+	<select id="getAppListForAppfocusCount" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM app t1
+		WHERE app_id NOT IN (SELECT content_id FROM app_focus WHERE category_id = #{categoryId}) AND state=1 AND category_id = #{categoryId}
+		ORDER BY seq ASC,create_time ASC
+	</select>
+	<!-- 查询过滤后的应用_应用榜单管理 -->
+	<select id="getAppListForApptop" parameterType="map" resultMap="AppMap">
+		SELECT <include refid="selectColumnsAppRecommond" />
+		FROM app t1
+		<where>
+		app_id NOT IN (SELECT app_id FROM app_top WHERE top_type = ${topType} AND category_id = ${categoryId}) AND category_id = #{categoryId}
+		<if test="appName!=null">
+			AND app_name LIKE CONCAT ('%',#{appName,jdbcType=VARCHAR},'%')
+		</if>
+		</where>
+		ORDER BY seq ASC,create_time ASC 
+		LIMIT #{currentPage},#{pageSize}
+	</select>
+	<select id="getAppListForApptopCount" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM app t1
+		<where>
+		app_id NOT IN (SELECT app_id FROM app_top WHERE top_type = ${topType} AND category_id = ${categoryId}) AND category_id = #{categoryId}
+		<if test="appName!=null">
+			AND app_name LIKE CONCAT ('%',#{appName,jdbcType=VARCHAR},'%')
+		</if>
+		</where>
+	</select>
+	
+</mapper>

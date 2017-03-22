@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.CastDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		cast_id AS castId,cast_name AS castName,cast_type AS castType,
+		cast_desc AS castDesc,cast_picture AS castPicture,cast_pyname AS castPyname
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	1=1       				
+	       <if test="castId != null">
+				AND cast_id = #{castId}
+			</if>
+	       <if test="castName != null">
+				AND cast_name like CONCAT('%','${castName}','%' )
+			</if>
+	       <if test="castType != null">
+				AND cast_type = #{castType}
+			</if>
+	       <if test="castDesc != null">
+				AND cast_desc = #{castDesc}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.Cast">
+    <![CDATA[
+        INSERT INTO cast (
+        	cast_name ,
+        	cast_type ,
+        	cast_desc ,
+        	cast_picture ,
+        	cast_pyname
+        ) VALUES (
+        	#{castName} ,
+        	#{castType} ,
+        	#{castDesc} ,
+        	#{castPicture} ,
+        	#{castPyname}
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.Cast">
+    <![CDATA[
+        UPDATE cast SET
+	        cast_name = #{castName} ,
+	        cast_desc = #{castDesc} ,
+	        cast_type = #{castType} ,
+	        cast_picture = #{castPicture} ,
+	        cast_pyname = #{castPyname}
+        WHERE 
+	        cast_id = #{castId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM cast 
+        WHERE
+        	cast_id = #{castId} 
+        AND
+        	cast_type = #{castType} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.bluray.Cast">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM cast 
+	        WHERE 
+		        cast_id = #{castId} 
+			AND
+		        cast_type = #{castType} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM cast 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.Cast">
+    	SELECT <include refid="selectColumns" />
+	    FROM cast 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

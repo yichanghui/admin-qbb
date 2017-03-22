@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.video.VideosetCastDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		cast_id AS castId,cast_type AS castType,videoset_id AS videosetId,cast_name AS castName
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 1=1	      				
+	       <if test="castId != null">
+				AND cast_id = #{castId}
+			</if>
+	       <if test="castType != null">
+				AND cast_type = #{castType}
+			</if>
+	       <if test="videosetId != null">
+				AND videoset_id = #{videosetId}
+			</if>
+	       <if test="castName != null">
+				AND cast_name like CONCAT('%',#{castName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.video.VideosetCast">
+    <![CDATA[
+        INSERT INTO videoset_cast (
+        	cast_id ,
+        	cast_type ,
+        	videoset_id ,
+        	cast_name 
+        ) VALUES (
+        	#{castId} ,
+        	#{castType} ,
+        	#{videosetId} ,
+        	#{castName} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.video.VideosetCast">
+    <![CDATA[
+        UPDATE videoset_cast SET
+	        cast_name = #{castName} 
+        WHERE 
+	        cast_id = #{castId} AND
+	        cast_type = #{castType} AND
+	        videoset_id = #{videosetId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM videoset_cast WHERE
+        cast_id = #{castId} AND
+        cast_type = #{castType} AND
+        videoset_id = #{videosetId} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.video.VideosetCast">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM videoset_cast 
+	        WHERE 
+		        cast_id = #{castId} AND
+		        cast_type = #{castType} AND
+		        videoset_id = #{videosetId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM videoset_cast 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.video.VideosetCast">
+    	SELECT <include refid="selectColumns" />
+	    FROM videoset_cast 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

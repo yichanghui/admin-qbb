@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ClassSecondMapper">
+	<resultMap id="classSecondMap" type="com.hiveview.entity.video.tag.ClassSecond">
+		<id column="secondclass_id"  property="secondclassId" jdbcType="BIGINT" />
+		<id column="firstclass_id" property="firstclassId" jdbcType="BIGINT" />
+		<result column="secondclass_name" property="secondclassName" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="is_effective"  property="isEffective" jdbcType="TINYINT"/>
+	</resultMap>
+
+	<select id="getClassSecondByPage" parameterType="map" resultMap="classSecondMap">
+		SELECT * FROM class_second
+		<where>
+		<if test="classSecond!=null">
+			<if test="classSecond.secondclassName!=null">
+				and  secondclass_name   like CONCAT('%',#{classSecond.secondclassName,jdbcType=VARCHAR},'%') 
+			</if>
+			<if test="classSecond.firstclassId!=null" >
+				and  firstclass_id=#{classSecond.firstclassId}
+			</if>
+			<if test="classSecond.isEffective!=null">
+				and  is_effective = #{classSecond.isEffective,jdbcType=INTEGER}
+			</if>
+			</if>
+		</where>
+		ORDER BY sequence ASC
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM class_second
+		<where>
+		<if test="classSecond!=null">
+			<if test="classSecond.secondclassName!=null">
+				and  secondclass_name   like CONCAT('%',#{classSecond.secondclassName,jdbcType=VARCHAR},'%') 
+			</if>
+			<if test="classSecond.firstclassId!=null" >
+				and  firstclass_id=#{classSecond.firstclassId}
+			</if>
+			<if test="classSecond.isEffective!=null">
+				and  is_effective = #{classSecond.isEffective,jdbcType=INTEGER}
+			</if>
+			</if>
+		</where>
+	</select>
+
+	<select id="getClassSecondByFirstId" parameterType="map" resultMap="classSecondMap">
+		SELECT * FROM class_second where firstclass_id=#{firstclassId}
+	</select>
+
+
+	<select id="getClassSecondById" parameterType="ClassSecondKey" resultMap="classSecondMap">
+		select * from class_second where secondclass_id=#{secondclassId} and firstclass_id=#{firstclassId}
+	</select>
+
+
+	<update id="updateClassSecond" parameterType="ClassSecond">
+		UPDATE class_second  set  sequence = #{sequence,jdbcType=INTEGER},secondclass_name = #{secondclassName,jdbcType=VARCHAR},is_effective=#{isEffective,jdbcType=INTEGER}
+		WHERE secondclass_id = #{secondclassId,jdbcType=BIGINT}
+	</update>
+
+	<insert id="addClassSecond" parameterType="ClassSecond" useGeneratedKeys="true"
+		keyProperty="secondclassId">
+		INSERT INTO class_second
+		(sequence,secondclass_name,firstclass_id,is_effective)
+		VALUES
+		(#{sequence},#{secondclassName},#{firstclassId},#{isEffective})
+	</insert>
+
+
+	<delete id="deleteClassSecond" parameterType="ClassSecondKey">
+		<!-- 
+		 DELETE FROM class_second WHERE
+		 secondclass_id=#{secondclassId,jdbcType=BIGINT}
+		 -->
+		 <!-- 逻辑上删除二级频道 -->
+		update class_second set is_effective = -1 where secondclass_id=#{secondclassId,jdbcType=BIGINT}
+	</delete>
+
+</mapper>

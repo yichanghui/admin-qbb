@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.recommend.SubjectContentDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		seq AS seq,subject_id AS subjectId,content_id AS contentId,content_img AS contentImg,content_name AS contentName,content_type AS contentType,content_desc AS contentDesc,is_effective AS isEffective
+	    ]]>
+	</sql>
+	<sql id="table_alias">
+		subject_content
+	</sql>
+	<sql id="findPageWhere">
+		<where>	
+		<if test="subjectContent != null"> 				
+	       <if test="subjectContent.seq != null">
+				AND seq = #{subjectContent.seq}
+			</if>
+	       <if test="subjectContent.subjectId != null">
+				AND subject_id = #{subjectContent.subjectId}
+			</if>
+	       <if test="subjectContent.contentId != null">
+				AND content_id = #{subjectContent.contentId}
+			</if>
+	       <if test="subjectContent.contentName != null">
+				AND content_name like CONCAT('%', #{subjectContent.contentName},'%')
+			</if>
+	       <if test="subjectContent.contentImg != null">
+				AND content_img = #{subjectContent.contentImg}
+			</if>
+	       <if test="subjectContent.contentType != null">
+				AND content_type = #{subjectContent.contentType}
+			</if>
+	       <if test="subjectContent.contentDesc != null">
+				AND content_desc like CONCAT('%',#{subjectContent.contentDesc},'%')
+			</if>
+	       <if test="subjectContent.createdTime != null">
+				AND created_time = #{subjectContent.createdTime}
+			</if>
+	       <if test="subjectContent.updatedTime != null">
+				AND updated_time = #{subjectContent.updatedTime}
+			</if>
+	       <if test="subjectContent.isEffective != null">
+				AND is_effective = #{subjectContent.isEffective}
+			</if>
+		</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.recommend.SubjectContent">
+        INSERT INTO <include refid="table_alias"/> (
+    <![CDATA[
+        	seq ,
+        	subject_id ,
+        	content_id ,
+        	content_name ,
+        	content_img ,
+        	content_type ,
+        	content_desc ,
+        	created_time ,
+        	updated_time ,
+        	is_effective 
+        ) VALUES (
+        	#{seq} ,
+        	#{subjectId} ,
+        	#{contentId} ,
+        	#{contentName} ,
+        	#{contentImg} ,
+        	#{contentType} ,
+        	#{contentDesc} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.recommend.SubjectContent">
+        UPDATE <include refid="table_alias"/> SET
+    <![CDATA[
+	    seq = #{seq},content_img = #{contentImg},is_effective = #{isEffective} 
+        WHERE subject_id = #{subjectId} AND content_id = #{contentId} AND content_type = #{contentType} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+        DELETE FROM <include refid="table_alias"/> WHERE
+    <![CDATA[
+        	content_id = #{contentId} 
+		AND 
+        	content_type = #{contentType} 
+        AND 
+        	subject_id = #{subjectId}
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.recommend.SubjectContent">
+		SELECT 
+				seq AS seq
+		    FROM <include refid="table_alias"/> 
+	    <![CDATA[
+	        WHERE 
+		        content_id = #{contentId} 
+		      AND 
+		        content_type = #{contentType} 
+		      AND 
+		      	subject_id = #{subjectId}
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+SELECT COUNT(1) FROM 
+subject_content t1 LEFT JOIN video_set t2
+ON t1.content_id = t2.videoset_id
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.recommend.SubjectContent">
+SELECT 
+t1.seq,t1.subject_id AS subjectId,t1.content_id AS contentId,t1.content_name AS contentName,t1.content_img AS contentImg,t1.content_type AS contentType,t1.is_effective AS isEffective,
+t2.videoset_img AS videosetImg,t2.videoset_tv_img AS videosetTvImg
+FROM 
+subject_content t1 LEFT JOIN video_set t2
+ON t1.content_id = t2.videoset_id ORDER BY t1.seq ASC,t1.created_time
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

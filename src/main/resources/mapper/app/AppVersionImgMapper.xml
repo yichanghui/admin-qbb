@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.app.AppVersionImgDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id AS id,seq AS seq,app_id AS appId,app_version_id AS appVersionId,img_url AS imgUrl,img_size AS imgSize,img_desc AS imgDesc,create_time AS createTime,update_time AS updateTime
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="id != null">
+				AND id = #{id}
+			</if>
+	       <if test="appId != null">
+				AND app_id = #{appId}
+			</if>
+	       <if test="appVersionId != null">
+				AND app_version_id = #{appVersionId}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.app.AppVersionImg">
+    <![CDATA[
+        INSERT INTO app_version_img (
+        	id ,
+        	seq ,
+        	app_id ,
+        	app_version_id ,
+        	img_url ,
+        	img_size ,
+        	img_desc ,
+        	create_time ,
+        	update_time 
+        ) VALUES (
+        	#{id} ,
+        	#{seq} ,
+        	#{appId} ,
+        	#{appVersionId} ,
+        	#{imgUrl} ,
+        	#{imgSize} ,
+        	#{imgDesc} ,
+        	NOW() ,
+        	NOW() 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.app.AppVersionImg">
+    <![CDATA[
+        UPDATE app_version_img SET
+	        seq = #{seq} ,
+	        app_id = #{appId} ,
+	        app_version_id = #{appVersionId} ,
+	        img_url = #{imgUrl} ,
+	        img_size = #{imgSize} ,
+	        img_desc = #{imgDesc} ,
+	        update_time = NOW() 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM app_version_img WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.app.AppVersionImg">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM app_version_img 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM app_version_img 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.app.AppVersionImg">
+    	SELECT <include refid="selectColumns" />
+	    FROM app_version_img 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

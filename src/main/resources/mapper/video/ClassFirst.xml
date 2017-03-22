@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ClassFirstMapper">
+	<resultMap id="classFirstMap" type="com.hiveview.entity.video.tag.ClassFirst">
+		<id column="firstclass_id" property="firstclassId" jdbcType="BIGINT" />
+		<result column="firstclass_name" property="firstclassName" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="is_effective"  property="isEffective" jdbcType="TINYINT"/>
+		<result column="pic"  property="pic" jdbcType="VARCHAR"/>
+		<result column="icon"  property="icon" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="tableColumns">
+		firstclass_id,sequence,firstclass_name,is_effective,pic,icon
+	</sql>
+	<select id="getClassFirstByPage" parameterType="map" resultMap="classFirstMap">
+		SELECT <include refid="tableColumns" /> FROM class_first
+		<where>
+		<if test="classFirst!=null">
+			<if test="classFirst.firstclassName!=null">
+				and  firstclass_name like CONCAT ('%',#{classFirst.firstclassName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classFirst.isEffective!=null">
+				and  is_effective = #{classFirst.isEffective,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getAllEffectiveClassFirst" parameterType="map" resultMap="classFirstMap">
+		SELECT firstclass_id,firstclass_name FROM class_first
+		<![CDATA[
+		WHERE is_effective <> -1 ORDER BY sequence ASC
+		]]>
+	</select>
+	
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM class_first
+		<where>
+		<if test="classFirst!=null">
+			<if test="classFirst.firstclassName!=null">
+				and  firstclass_name like CONCAT ('%',#{classFirst.firstclassName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="classFirst.isEffective!=null">
+				and  is_effective = #{classFirst.isEffective,jdbcType=INTEGER}
+			</if>
+		</if>	
+		</where>
+	</select>
+
+	<select id="getClassFirstById" parameterType="long" resultMap="classFirstMap">
+		select <include refid="tableColumns" /> from class_first where firstclass_id=#{firstclassId}
+	</select>
+
+
+	<update id="updateClassFirst" parameterType="ClassFirst">
+		UPDATE class_first  set sequence = #{sequence,jdbcType=INTEGER},firstclass_name = #{firstclassName,jdbcType=VARCHAR},is_effective = #{isEffective,jdbcType=INTEGER},pic=#{pic,jdbcType=VARCHAR}
+		<if test="icon!=null">
+		,icon=#{icon,jdbcType=INTEGER}
+		</if>
+		WHERE firstclass_id = #{firstclassId,jdbcType=BIGINT}
+	</update>
+
+	<insert id="addClassFirst" parameterType="ClassFirst" useGeneratedKeys="true" keyProperty="firstclassId">
+		INSERT INTO class_first (sequence,firstclass_name,is_effective,pic,icon)
+		VALUES (#{sequence},#{firstclassName},#{isEffective},#{pic},#{icon})
+	</insert>
+
+
+	<delete id="deleteClassFirst" parameterType="long">
+		<!-- 
+			DELETE FROM class_first WHERE  firstclass_id=#{firstclassId,jdbcType=BIGINT}
+		 -->
+		<!-- 逻辑上删除一级频道 -->		
+		update class_first set is_effective = -1  where firstclass_id=#{firstclassId,jdbcType=BIGINT}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.HdSubjectDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		subject_id AS subjectId,seq AS seq,subject_name AS subjectName,subject_pic AS subjectPic,subject_desc AS subjectDesc,subject_bg_img AS subjectBgImg,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	 1=1     				
+	       <if test="subjectId != null">
+				AND subject_id = #{subjectId}
+			</if>
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="subjectName != null and subjectName!='' ">
+				AND subject_name like CONCAT('%', #{subjectName},'%') 
+			</if>
+	       <if test="subjectPic != null">
+				AND subject_pic = #{subjectPic}
+			</if>
+	       <if test="subjectDesc != null and subjectDesc!='' ">
+				AND subject_desc like CONCAT('%', #{subjectName},'%') #{subjectDesc}
+			</if>
+	       <if test="subjectBgImg != null">
+				AND subject_bg_img = #{subjectBgImg}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.HdSubject">
+    <![CDATA[
+        INSERT INTO hd_subject (
+        	seq ,
+        	subject_name ,
+        	subject_pic ,
+        	subject_desc ,
+        	subject_bg_img ,
+        	created_time ,
+        	updated_time ,
+        	is_effective 
+        ) VALUES (
+        	#{seq} ,
+        	#{subjectName} ,
+        	#{subjectPic} ,
+        	#{subjectDesc} ,
+        	#{subjectBgImg} ,
+        	#{createdTime} ,
+        	#{updatedTime} ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.HdSubject">
+    <![CDATA[
+        UPDATE hd_subject SET
+	        seq = #{seq} ,
+	        subject_name = #{subjectName} ,
+	        subject_pic = #{subjectPic} ,
+	        subject_desc = #{subjectDesc} ,
+	        subject_bg_img = #{subjectBgImg} ,
+	        created_time = #{createdTime} ,
+	        updated_time = #{updatedTime} ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        subject_id = #{subjectId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM hd_subject WHERE
+        subject_id = #{subjectId} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.bluray.HdSubject">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM hd_subject 
+	        WHERE 
+		        subject_id = #{subjectId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM hd_subject 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.HdSubject">
+    	SELECT <include refid="selectColumns" />
+	    FROM hd_subject 
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective DESC,seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

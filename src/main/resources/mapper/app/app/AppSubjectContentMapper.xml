@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.app.app.AppSubjectContentDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		seq AS seq,subject_id AS subjectId,app_id AS appId,created_time AS createdTime,updated_time AS updatedTime,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="baseColumns">
+	    <![CDATA[
+		seq ,subject_id ,app_id ,created_time ,updated_time ,is_effective 
+	    ]]>
+	</sql>
+	<!-- appsubjectContent 和  app 的关联信息-->
+	<resultMap id="appSubjectContentMap" type="com.hiveview.entity.vo.app.AppSubjectContentVo">
+		<id column="subject_id" property="subjectId" />
+		<result column="seq" property="seq" />
+		<result column="app_id" property="appId" />
+		<result column="created_time" property="createdTime" />
+		<result column="updated_time" property="updatedTime" />
+		<result column="is_effective" property="isEffective" />
+		<association  property="app" column="{appId=app_id}" select="AppMapper.getAppInfo" />
+	</resultMap>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="subjectId != null">
+				AND subject_id = #{subjectId}
+			</if>
+	       <if test="appId != null">
+				AND app_id = #{appId}
+			</if>
+	       <if test="createdTime != null">
+				AND created_time = #{createdTime}
+			</if>
+	       <if test="updatedTime != null">
+				AND updated_time = #{updatedTime}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.app.app.AppSubjectContent">
+    <![CDATA[
+        INSERT INTO app_subject_content (
+        	seq ,
+        	subject_id ,
+        	app_id ,
+        	created_time ,
+        	updated_time ,
+        	is_effective 
+        ) VALUES (
+        	#{seq} ,
+        	#{subjectId} ,
+        	#{appId} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.app.app.AppSubjectContent">
+    <![CDATA[
+        UPDATE app_subject_content SET
+	        seq = #{seq} ,
+	        updated_time = NOW() ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        subject_id = #{subjectId} AND
+	        app_id = #{appId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM app_subject_content WHERE
+        subject_id = #{subjectId} AND
+        app_id = #{appId} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.app.app.AppSubjectContent">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM app_subject_content 
+	        WHERE 
+		        subject_id = #{subjectId} AND
+		        app_id = #{appId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM app_subject_content 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.app.app.AppSubjectContent">
+    	SELECT <include refid="selectColumns" />
+	    FROM app_subject_content 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <select id="getInfoList" resultMap="appSubjectContentMap">
+    	SELECT <include refid="baseColumns" />
+	    FROM app_subject_content 
+		<include refid="findPageWhere"/>
+		ORDER BY seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.client.CpChannelTvDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		cp_channel_id AS cpChannelId,tv_id AS tvId,is_effective AS isEffective
+	    ]]>
+	</sql>
+	<sql id="baseColumns">
+	    <![CDATA[
+		cp_channel_id ,tv_id ,is_effective 
+	    ]]>
+	</sql>
+	
+	<resultMap id="CpChannelTvMap" type="com.hiveview.entity.vo.client.CpChannelTvVo">
+		<id column="cp_channel_id" property="cpChannelId" jdbcType="BIGINT" />
+		<result column="is_effective"  property="isEffective"/>
+		<result column="tv_id"  property="tvId"/>
+		<association  property="tv" column="{id=tv_id}" select="com.hiveview.dao.client.TvDao.get" />
+	</resultMap>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="cpChannelId != null">
+				AND cp_channel_id = #{cpChannelId}
+			</if>
+	       <if test="tvId != null">
+				AND tv_id = #{tvId}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.client.CpChannelTv">
+    <![CDATA[
+        INSERT INTO cp_channel_tv (
+        	cp_channel_id ,
+        	tv_id ,
+        	is_effective 
+        ) VALUES (
+        	#{cpChannelId} ,
+        	#{tvId} ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.client.CpChannelTv">
+    <![CDATA[
+        UPDATE cp_channel_tv SET
+	        is_effective = #{isEffective} 
+        WHERE 
+	        cp_channel_id = #{cpChannelId} AND
+	        tv_id = #{tvId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM cp_channel_tv WHERE
+        cp_channel_id = #{cpChannelId} AND
+        tv_id = #{tvId} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.client.CpChannelTv">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM cp_channel_tv 
+	        WHERE 
+		        cp_channel_id = #{cpChannelId} AND
+		        tv_id = #{tvId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM cp_channel_tv 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.client.CpChannelTv">
+    	SELECT <include refid="baseColumns" />
+	    FROM cp_channel_tv 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    <select id="getCpChannelTvByPage" resultMap="CpChannelTvMap">
+    	SELECT <include refid="baseColumns" />
+	    FROM cp_channel_tv 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

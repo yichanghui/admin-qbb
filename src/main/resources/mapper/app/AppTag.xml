@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="TagMapper">
+	<resultMap id="CategoryMap" type="com.hiveview.entity.app.Category">
+		<id column="category_id" property="categoryId" jdbcType="INTEGER" />
+		<result column="category_name" property="categoryName" jdbcType="INTEGER" />
+		<result column="seq" property="seq" jdbcType="INTEGER" />
+		<result column="state"  property="state" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<resultMap id="TagMap" type="com.hiveview.entity.app.Tag">
+		<id column="tag_id" property="tagId" jdbcType="INTEGER" />
+		<result column="tag_name" property="tagName" jdbcType="INTEGER" />
+		<result column="seq" property="seq" jdbcType="INTEGER" />
+		<result column="state"  property="state" jdbcType="INTEGER"/>
+		<result column="category_id"  property="categoryId" jdbcType="INTEGER"/>
+	</resultMap>
+
+	<select id="getTagList" parameterType="map" resultMap="TagMap">
+		SELECT tag_id,tag_name,category_id FROM app_tag WHERE state=1
+		<if test="categoryId!=null">
+			AND category_id=#{categoryId,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCategoryList" parameterType="map" resultMap="CategoryMap">
+		SELECT category_id,category_name FROM app_category WHERE state=1
+	</select>
+	
+	<select id="getTagListByPage" parameterType="map" resultMap="TagMap">
+		SELECT tag_id,seq,tag_name,category_id,state FROM app_tag WHERE 1=1
+		<if test="tag.tagName!=null">
+		
+			AND tag_name like CONCAT('%',#{tag.tagName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="tag.categoryId!=null">
+			AND category_id=#{tag.categoryId,jdbcType=INTEGER}
+		</if>
+		LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<select id="getCategoryListByPage" parameterType="map" resultMap="CategoryMap">
+		SELECT category_id,category_name,seq,state FROM app_category WHERE 1=1 
+		<if test="category.categoryName!=null">
+		AND category_name like CONCAT('%',#{category.categoryName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="category.state!=null">
+		AND state =#{category.state,jdbcType=INTEGER}
+		</if>
+		LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<select id="getCountForTag" parameterType="Tag" resultType="int">
+		SELECT COUNT(*) FROM app_tag WHERE 1=1
+		<if test="tagName!=null">
+			AND tag_name like CONCAT('%',#{tagName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="categoryId!=null">
+			AND category_id=#{categoryId,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCountForCategory" parameterType="Category" resultType="int">
+		SELECT COUNT(1) FROM app_category WHERE 1=1 
+		<if test="categoryName!=null">
+		AND category_name like CONCAT('%',#{categoryName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="state!=null">
+		AND state=#{state,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<update id="updateTag" parameterType="Tag">
+		UPDATE app_tag
+		<set>
+		update_time=#{updateTime,jdbcType=INTEGER},
+		<if test="tagName!=null">
+		tag_name=#{tagName,jdbcType=VARCHAR},
+		</if>
+		<if test="state!=null">
+		state=#{state,jdbcType=INTEGER},
+		</if>
+		<if test="seq!=null">
+		seq=#{seq,jdbcType=INTEGER},
+		</if>
+		<if test="categoryId!=null">
+		category_id=#{categoryId,jdbcType=INTEGER}
+		</if>
+		</set>
+		WHERE tag_id=#{tagId,jdbcType=INTEGER}
+	</update>
+	<update id="updateCategory" parameterType="Category">
+		UPDATE app_category
+		<set>
+		update_time=#{updateTime,jdbcType=TIMESTAMP},
+		<if test="categoryName!=null">
+		category_name=#{categoryName,jdbcType=VARCHAR},
+		</if>
+		<if test="state!=null">
+		state=#{state,jdbcType=INTEGER},
+		</if>
+		<if test="seq!=null">
+		seq=#{seq,jdbcType=INTEGER},
+		</if>
+		</set>
+		WHERE category_id=#{categoryId,jdbcType=INTEGER}
+	</update>
+
+	<insert id="saveTag" parameterType="Tag" useGeneratedKeys="true"
+		keyProperty="tagId">
+		INSERT INTO app_tag
+		(tag_name,seq,state,category_id,create_time)
+		VALUES
+		(#{tagName},#{seq},#{state},#{categoryId},#{createTime})
+	</insert>
+	
+	<insert id="saveCategory" parameterType="Category" useGeneratedKeys="true"
+		keyProperty="categoryId">
+		INSERT INTO app_category
+		(category_name,seq,state,create_time)
+		VALUES
+		(#{categoryName},#{seq},1,#{createTime})
+	</insert>
+	
+	<update id="deleteTag" parameterType="Tag">
+		UPDATE app_tag SET state = 0 WHERE tag_id=#{tagId}
+	</update>
+	<update id="deleteCategory" parameterType="Category">
+		UPDATE app_category SET state = 0 WHERE category_id=#{categoryId}
+	</update>
+</mapper>

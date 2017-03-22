@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.client.HardwareDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id AS id,cp_id AS cpId,hardware_no AS hardwareNo,is_effective AS isEffective
+	    ]]>
+	</sql>
+	<sql id="baseColumns">
+		id ,cp_id ,hardware_no ,is_effective 
+	</sql>
+	
+	<resultMap id="HardwareMap" type="com.hiveview.entity.vo.client.HardwareVo">
+		<id column="id" property="id" />
+		<result column="hardware_no" property="hardwareNo"/>
+		<result column="cp_id" property="cpId"/>
+		<result column="is_effective" property="isEffective" />
+		<association  property="cp" column="{cpId=cp_id}" select="CpMapper.get" />
+	</resultMap>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="id != null">
+				AND id = #{id}
+			</if>
+	       <if test="cpId != null">
+				AND cp_id = #{cpId}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.client.Hardware" useGeneratedKeys="true"
+		keyProperty="id">
+    <![CDATA[
+        INSERT INTO hardware (
+        	cp_id ,
+        	hardware_no ,
+        	is_effective ,
+        	create_time ,
+        	update_time 
+        ) VALUES (
+        	#{cpId} ,
+        	#{hardwareNo} ,
+        	#{isEffective} ,
+        	NOW() ,
+        	NOW() 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.client.Hardware">
+    <![CDATA[
+        UPDATE hardware SET
+	        cp_id = #{cpId} ,
+	        hardware_no = #{hardwareNo} ,
+	        is_effective = #{isEffective} ,
+	        update_time = #{updateTime} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM hardware WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.client.Hardware">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM hardware 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+    <select id="getByHardwareNo" resultType="com.hiveview.entity.client.Hardware">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM hardware 
+	        WHERE 
+		        cp_id = #{cpId}
+		    AND
+		        hardware_no = #{hardwareNo} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM hardware 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.client.Hardware">
+    	SELECT <include refid="selectColumns" />
+	    FROM hardware 
+		<include refid="findPageWhere"/>
+		ORDER BY cp_id,id
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    <select id="getInfoList" resultMap="HardwareMap">
+    	SELECT <include refid="baseColumns" />
+	    FROM hardware 
+		<include refid="findPageWhere"/>
+		ORDER BY cp_id,id
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <select id="getHardwareListForVersion" parameterType="long" resultType="com.hiveview.entity.bo.client.HardwareBo">
+    	SELECT id AS id,hardware_no AS hardwareNo
+	    FROM hardware 
+		WHERE cp_id=#{cpId}
+    </select>
+</mapper>
+

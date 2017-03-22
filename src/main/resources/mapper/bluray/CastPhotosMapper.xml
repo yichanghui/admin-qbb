@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.CastPhotosDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		photo_id AS photoId,photo_desc AS photoDesc,cast_type AS castType,cast_id AS castId,photo_url AS photoUrl
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	 1=1     				
+	       <if test="photoId != null">
+				AND photo_id = #{photoId}
+			</if>
+	       <if test="photoDesc != null">
+				AND photo_desc = #{photoDesc}
+			</if>
+	       <if test="castType != null">
+				AND cast_type = #{castType}
+			</if>
+	       <if test="castId != null">
+				AND cast_id = #{castId}
+			</if>
+	       <if test="photoUrl != null">
+				AND photo_url = #{photoUrl}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.CastPhotos">
+    <![CDATA[
+        INSERT INTO cast_photos (
+        	photo_desc ,
+        	cast_type ,
+        	cast_id ,
+        	photo_url 
+        ) VALUES (
+        	#{photoDesc} ,
+        	#{castType} ,
+        	#{castId} ,
+        	#{photoUrl} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.CastPhotos">
+    <![CDATA[
+        UPDATE cast_photos SET
+	        photo_desc = #{photoDesc} ,
+	        cast_type = #{castType} ,
+	        cast_id = #{castId} ,
+	        photo_url = #{photoUrl} 
+        WHERE 
+	        photo_id = #{photoId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM cast_photos WHERE
+        photo_id = #{photoId} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.bluray.CastPhotos">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM cast_photos 
+	        WHERE 
+		        photo_id = #{photoId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM cast_photos 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.CastPhotos">
+    	SELECT <include refid="selectColumns" />
+	    FROM cast_photos 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

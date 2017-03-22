@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="VideoMapper">
+	<resultMap id="videoMap" type="com.hiveview.entity.video.Video">
+		<id column="video_id" property="videoId" jdbcType="BIGINT" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="videoset_id" property="videosetId" jdbcType="BIGINT" />
+		<result column="video_name" property="videoName" jdbcType="VARCHAR" />
+		<result column="video_img" property="videoImg" jdbcType="VARCHAR" />
+		<result column="video_focus" property="videoFocus" jdbcType="VARCHAR" />
+		<result column="season" property="season" jdbcType="VARCHAR" />
+		<result column="phase" property="phase" jdbcType="VARCHAR" />
+		<result column="play_length" property="playLength" jdbcType="BIGINT" />
+		<result column="video_brief" property="videoBrief" jdbcType="VARCHAR" />
+		<result column="keyword" property="keyWord" jdbcType="VARCHAR" />
+		<result column="cp_video_id" property="cpVideoId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="video_type" property="videoType" jdbcType="TINYINT" />
+		<result column="is_effective" property="isEffective" jdbcType="TINYINT" />
+		<result column="content_type" property="contentType" jdbcType="TINYINT" />
+		<result column="year" property="year" jdbcType="TINYINT" />
+	</resultMap>
+
+	<select id="getVideoByVideoSetId" parameterType="map" resultMap="videoMap">
+		SELECT * FROM video where videoset_id=#{videosetId} ORDER BY video_id DESC
+	</select>
+
+
+	<select id="getVideoByPage" parameterType="map" resultMap="videoMap">
+		SELECT * FROM video
+		<where>
+			<if test="video!=null">
+				<if test='video.videoName!=null and video.videoName!=""'>
+					 and video_name  like CONCAT('%',#{video.videoName,jdbcType=VARCHAR},'%')
+			    </if>
+			    <if test="video.videoType!=null and video.videoType!=-1">
+			    	 and video_type =#{video.videoType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.isEffective!=null">
+			    	and is_effective=#{video.isEffective,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.contentType!=null">
+			    	and content_type=#{video.contentType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.videosetId!=null">
+			    	and videoset_id=#{video.videosetId,jdbcType=BIGINT}
+			    </if>
+			    <if test="video.playLength!=null">
+			    	and play_length>#{video.playLength,jdbcType=BIGINT}
+			    </if>
+			</if>
+		</where>
+		ORDER BY sequence ASC,create_time DESC LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 栏目与新闻的关联（猜你喜欢） -->
+	<select id="getVideoForRelateList" parameterType="map" resultType="VideoSet">
+		SELECT video_id AS videosetId,video_name AS videosetName,video_type AS videosetType FROM video
+		<where>
+			<if test="video!=null">
+				<if test='video.videoName!=null and video.videoName!=""'>
+					 and video_name  like CONCAT('%',#{video.videoName,jdbcType=VARCHAR},'%')
+			    </if>
+			    <if test="video.videoType!=null and video.videoType!=-1">
+			    	 and video_type =#{video.videoType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.isEffective!=null and video.isEffective!=-1">
+			    	and is_effective=#{video.isEffective,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.contentType!=null">
+			    	and content_type=#{video.contentType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.videosetId!=null">
+			    	and videoset_id=#{video.videosetId,jdbcType=BIGINT}
+			    </if>
+			</if>
+		</where>
+		ORDER BY update_time DESC LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(video_id) FROM video
+		<where>
+			<if test="video!=null">
+				<if test="video!=null">
+				<if test='video.videoName!=null and video.videoName!=""'>
+					 and video_name  like CONCAT('%',#{video.videoName,jdbcType=VARCHAR},'%')
+			    </if>
+			    <if test="video.videoType!=null and video.videoType!=-1">
+			    	 and video_type =#{video.videoType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.isEffective!=null">
+			    	and is_effective=#{video.isEffective,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.contentType!=null">
+			    	and content_type=#{video.contentType,jdbcType=TINYINT}
+			    </if>
+			    <if test="video.videosetId!=null">
+			    	and videoset_id=#{video.videosetId,jdbcType=BIGINT}
+			    </if>
+			    <if test="video.playLength!=null">
+			    	and play_length>#{video.playLength,jdbcType=BIGINT}
+			    </if>
+			</if>
+			</if>			
+		</where>
+	</select>
+
+	<select id="getVideoById" parameterType="long" resultMap="videoMap">
+		select * from video where video_id=#{videoId}
+	</select>
+
+	<update id="updateVideo" parameterType="Video">
+		UPDATE video
+		<set>
+		   	<if test="sequence!=null">
+				sequence = #{sequence,jdbcType=INTEGER},
+			</if>
+			<if test="videoName!=null">
+				video_name = #{videoName,jdbcType=VARCHAR},
+			</if>
+			<if test="videoImg!=null">
+				video_img = #{videoImg,jdbcType=VARCHAR},
+			</if>
+			<if test="videoFocus!=null">
+				video_focus = #{videoFocus,jdbcType=VARCHAR},
+			</if>
+			<if test="videoBrief!=null">
+				video_brief = #{videoBrief,jdbcType=VARCHAR},
+			</if>
+			<if test="keyWord!=null">
+				keyword = #{keyWord,jdbcType=VARCHAR},
+			</if>
+			<if test="cpVideoId!=null">
+				cp_video_id = #{cpVideoId,jdbcType=VARCHAR},
+			</if>
+			<if test="phase!=null">
+				phase = #{phase,jdbcType=VARCHAR},
+			</if>
+			<if test="season!=null">
+				season = #{season,jdbcType=VARCHAR},
+			</if>
+			<if test="playLength!=null">
+				play_length = #{playLength,jdbcType=BIGINT},
+			</if>
+			<if test="isEffective!=null">
+				is_effective = #{isEffective,jdbcType=INTEGER},
+			</if>
+			<if test="videoType!=null">
+				video_type = #{videoType,jdbcType=INTEGER},
+			</if>
+		  <if test="year!=null">
+			year = #{year,jdbcType=INTEGER}
+		</if>
+		</set>
+		WHERE video_id = #{videoId,jdbcType=BIGINT}
+	</update>
+
+	<update id="updateVideoType" parameterType="map">
+		UPDATE video SET video_type=#{videoType} WHERE videoset_id=#{videosetId}
+	</update>
+	
+	<update id="updateIsEffByVideosetId" parameterType="map">
+		update video set is_effective=#{isEffective} where videoset_id=#{videosetId}
+	</update>
+	
+	<update id="batchUpdateVideo" parameterType="Video">
+		UPDATE video SET is_effective=1,videoset_id=#{videosetId}
+		WHERE video_id=#{videoId}
+	</update>
+
+	<insert id="addVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="videoId">
+		INSERT INTO video
+		(sequence,videoset_id,video_name,video_img,video_focus,video_brief,keyword,cp_video_id,create_time,is_effective,video_type,content_type,year,phase,season,play_length)
+		VALUES
+		(#{sequence},#{videosetId},#{videoName},#{videoImg},#{videoFocus},#{videoBrief},#{keyWord},#{cpVideoId},#{createTime},1,#{videoType},#{contentType},#{year},#{phase},#{season},#{playLength})
+	</insert>
+	<delete id="deleteVideo" parameterType="long">
+		DELETE FROM video WHERE
+		video_id=#{videoId,jdbcType=BIGINT}
+	</delete>
+
+</mapper>

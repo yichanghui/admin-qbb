@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.client.TvDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id AS id,tvno AS tvid,tvname AS tvname,tvlogo AS tvlogo,sequence AS sequence,area_limit AS areaLimit,epg_address AS epgAddress,mediatype AS mediatype,liveurl AS liveurl,viewback AS viewback,updatedtime AS updatedtime,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="id != null">
+				AND id = #{id}
+			</if>
+	       <if test="tvid != null">
+				AND tvno = #{tvid}
+			</if>
+	       <if test="tvname != null">
+				AND tvname LIKE CONCAT('%', #{tvname} ,'%')
+			</if>
+	       <if test="tvlogo != null">
+				AND tvlogo = #{tvlogo}
+			</if>
+	       <if test="sequence != null">
+				AND sequence = #{sequence}
+			</if>
+	       <if test="areaLimit != null">
+				AND area_limit = #{areaLimit}
+			</if>
+	       <if test="epgAddress != null">
+				AND epg_address = #{epgAddress}
+			</if>
+	       <if test="mediatype != null">
+				AND mediatype = #{mediatype}
+			</if>
+	       <if test="liveurl != null">
+				AND liveurl = #{liveurl}
+			</if>
+	       <if test="viewback != null">
+				AND viewback = #{viewback}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.client.Tv">
+    <![CDATA[
+        INSERT INTO tv (
+        	id ,
+        	tvno ,
+        	tvname ,
+        	tvlogo ,
+        	sequence ,
+        	area_limit ,
+        	epg_address ,
+        	mediatype ,
+        	liveurl ,
+        	viewback ,
+        	updatedtime ,
+        	is_effective 
+        ) VALUES (
+        	#{id} ,
+        	#{tvid} ,
+        	#{tvname} ,
+        	#{tvlogo} ,
+        	#{sequence} ,
+        	#{areaLimit} ,
+        	#{epgAddress} ,
+        	#{mediatype} ,
+        	#{liveurl} ,
+        	#{viewback} ,
+        	#{updatedtime} ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.client.Tv">
+    <![CDATA[
+        UPDATE tv SET
+	        tvno = #{tvid} ,
+	        tvname = #{tvname} ,
+	        tvlogo = #{tvlogo} ,
+	        sequence = #{sequence} ,
+	        area_limit = #{areaLimit} ,
+	        epg_address = #{epgAddress} ,
+	        mediatype = #{mediatype} ,
+	        liveurl = #{liveurl} ,
+	        viewback = #{viewback} ,
+	        updatedtime = #{updatedtime} ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM tv WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.client.Tv">
+		SELECT <include refid="selectColumns" />
+		FROM tv 
+	    WHERE 
+		    id = #{id} 
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM tv 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.client.Tv">
+    	SELECT <include refid="selectColumns" />
+	    FROM tv 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <!-- 查询渠道未关联的电视台列表 -->
+    <select id="getUnselectList" resultType="com.hiveview.entity.client.Tv">
+    	SELECT <include refid="selectColumns" />
+	    FROM tv
+	    <where>
+			<if test="cpChannelId != null">
+				AND id NOT IN
+			(SELECT tv_id FROM cp_channel_tv WHERE cp_channel_id = #{cpChannelId})
+			</if>
+			<if test="tvname != null">
+				AND tvname LIKE CONCAT('%', #{tvname} ,'%')
+			</if>
+			<if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+	    </where> 
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <select id="getUnselectCount" resultType="Integer">
+        SELECT count(*) FROM tv 
+		<where>
+			<if test="cpChannelId != null">
+				AND id NOT IN
+			(SELECT tv_id FROM cp_channel_tv WHERE cp_channel_id = #{cpChannelId})
+			</if>
+			<if test="tvname != null">
+				AND tvname LIKE CONCAT('%', #{tvname} ,'%')
+			</if>
+			<if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+	    </where>    
+    </select>
+</mapper>
+

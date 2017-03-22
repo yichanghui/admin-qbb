@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.HdSubjectContentDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		seq AS seq,subject_id AS subjectId,content_id AS contentId,content_img AS contentImg,content_name AS contentName,content_type AS contentType,content_desc AS contentDesc,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	1=1      				
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="subjectId != null">
+				AND subject_id = #{subjectId}
+			</if>
+	       <if test="contentId != null">
+				AND content_id = #{contentId}
+			</if>
+	       <if test="contentName != null">
+				AND content_name = #{contentName}
+			</if>
+	       <if test="contentImg != null">
+				AND content_img = #{contentImg}
+			</if>
+	       <if test="contentType != null">
+				AND content_type = #{contentType}
+			</if>
+	       <if test="contentDesc != null">
+				AND content_desc = #{contentDesc}
+			</if>
+	       <if test="createdTime != null">
+				AND created_time = #{createdTime}
+			</if>
+	       <if test="updatedTime != null">
+				AND updated_time = #{updatedTime}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.HdSubjectContent">
+    <![CDATA[
+        INSERT INTO hd_subject_content (
+        	seq ,
+        	subject_id ,
+        	content_id ,
+        	content_name ,
+        	content_img ,
+        	content_type ,
+        	content_desc ,
+        	created_time ,
+        	updated_time ,
+        	is_effective 
+        ) VALUES (
+        	#{seq} ,
+        	#{subjectId} ,
+        	#{contentId} ,
+        	#{contentName} ,
+        	#{contentImg} ,
+        	#{contentType} ,
+        	#{contentDesc} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.HdSubjectContent">
+    <![CDATA[
+        UPDATE hd_subject_content SET
+	        seq = #{seq} ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        subject_id = #{subjectId} 
+	     AND
+	        content_id = #{contentId} 
+	     AND
+	        content_type = #{contentType} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM hd_subject_content WHERE
+        	content_id = #{contentId} 
+		AND 
+        	content_type = #{contentType} 
+        AND 
+        	subject_id = #{subjectId}
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.bluray.HdSubjectContent">
+		SELECT 
+				seq AS seq
+	    <![CDATA[
+		    FROM hd_subject_content 
+	        WHERE 
+		        content_id = #{contentId} 
+		      AND 
+		        content_type = #{contentType} 
+		      AND 
+		      	subject_id = #{subjectId}
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM hd_subject_content 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.HdSubjectContent">
+    	SELECT <include refid="selectColumns" />
+	    FROM hd_subject_content 
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective DESC,seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

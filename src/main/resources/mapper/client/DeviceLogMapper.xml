@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.client.DeviceLogDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id AS id,device_id AS deviceId,device_sn AS deviceSn,device_mac AS deviceMac,device_state AS deviceState,device_version AS deviceVersion,cp_id AS cpId,cp_name AS cpName,hardware_id AS hardwareId,hardware_no AS hardwareNo,cp_channel_id AS cpChannelId,cp_channel_name AS cpChannelName,rom_version AS romVersion,create_time AS createTime
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="id != null">
+				AND id = #{id}
+			</if>
+	       <if test="deviceId != null">
+				AND device_id = #{deviceId}
+			</if>
+	       <if test="deviceSn != null">
+				AND device_sn = #{deviceSn}
+			</if>
+	       <if test="deviceMac != null">
+				AND device_mac = #{deviceMac}
+			</if>
+	       <if test="deviceState != null">
+				AND device_state = #{deviceState}
+			</if>
+	       <if test="deviceVersion != null">
+				AND device_version = #{deviceVersion}
+			</if>
+	       <if test="cpId != null">
+				AND cp_id = #{cpId}
+			</if>
+	       <if test="cpName != null">
+				AND cp_name = #{cpName}
+			</if>
+	       <if test="hardwareId != null">
+				AND hardware_id = #{hardwareId}
+			</if>
+	       <if test="hardwareNo != null">
+				AND hardware_no = #{hardwareNo}
+			</if>
+	       <if test="cpChannelId != null">
+				AND cp_channel_id = #{cpChannelId}
+			</if>
+	       <if test="cpChannelName != null">
+				AND cp_channel_name = #{cpChannelName}
+			</if>
+	       <if test="romVersion != null">
+				AND rom_version = #{romVersion}
+			</if>
+	       <if test="createTime != null">
+				AND create_time = #{createTime}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="batchSave" parameterType="java.util.List">
+    
+        INSERT INTO device_log (
+        	device_id ,
+        	device_sn ,
+        	device_mac ,
+        	device_state ,
+        	device_version ,
+        	cp_id ,
+        	cp_name ,
+        	hardware_id ,
+        	hardware_no ,
+        	cp_channel_id ,
+        	cp_channel_name ,
+        	rom_version 
+        ) VALUES 
+        <foreach collection="list" item="item" index="index" separator=",">
+
+        (
+        	#{item.deviceId} ,
+        	#{item.deviceSn} ,
+        	#{item.deviceMac} ,
+        	#{item.deviceState} ,
+        	#{item.deviceVersion} ,
+        	#{item.cpId} ,
+        	#{item.cpName} ,
+        	#{item.hardwareId} ,
+        	#{item.hardwareNo} ,
+        	#{item.cpChannelId} ,
+        	#{item.cpChannelName} ,
+        	#{item.romVersion} 
+        )
+    	</foreach>
+	</insert>
+    
+</mapper>
+

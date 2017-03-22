@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.app.app.AppSubjectDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		subject_id AS subjectId,seq AS seq,subject_name AS subjectName,subject_pic AS subjectPic,subject_desc AS subjectDesc,subject_bg_img AS subjectBgImg,created_time AS createdTime,img_size AS imgSize,updated_time AS updatedTime,is_effective AS isEffective,category_id AS categoryId
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="subjectId != null">
+				AND subject_id = #{subjectId}
+			</if>
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="subjectName != null">
+				AND subject_name LIKE CONCAT('%', #{subjectName},'%')
+			</if>
+	       <if test="subjectPic != null">
+				AND subject_pic = #{subjectPic}
+			</if>
+	       <if test="subjectDesc != null">
+				AND subject_desc = #{subjectDesc}
+			</if>
+	       <if test="subjectBgImg != null">
+				AND subject_bg_img = #{subjectBgImg}
+			</if>
+	       <if test="createdTime != null">
+				AND created_time = #{createdTime}
+			</if>
+	       <if test="imgSize != null">
+				AND img_size = #{imgSize}
+			</if>
+	       <if test="updatedTime != null">
+				AND updated_time = #{updatedTime}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+	       <if test="categoryId != null">
+				AND category_id = #{categoryId}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.app.app.AppSubject">
+    <![CDATA[
+        INSERT INTO app_subject (
+        	subject_id ,
+        	seq ,
+        	subject_name ,
+        	subject_pic ,
+        	subject_desc ,
+        	subject_bg_img ,
+        	created_time ,
+        	img_size ,
+        	updated_time ,
+        	is_effective ,
+        	category_id 
+        ) VALUES (
+        	#{subjectId} ,
+        	#{seq} ,
+        	#{subjectName} ,
+        	#{subjectPic} ,
+        	#{subjectDesc} ,
+        	#{subjectBgImg} ,
+        	NOW() ,
+        	#{imgSize} ,
+        	NOW() ,
+        	#{isEffective} ,
+        	#{categoryId} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.app.app.AppSubject">
+    <![CDATA[
+        UPDATE app_subject SET
+	        seq = #{seq} ,
+	        subject_name = #{subjectName} ,
+	        subject_pic = #{subjectPic} ,
+	        subject_desc = #{subjectDesc} ,
+	        subject_bg_img = #{subjectBgImg} ,
+	        img_size = #{imgSize} ,
+	        updated_time = NOW() ,
+	        is_effective = #{isEffective} ,
+	        category_id = #{categoryId} 
+        WHERE 
+	        subject_id = #{subjectId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM app_subject WHERE
+        subject_id = #{subjectId} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.app.app.AppSubject">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM app_subject 
+	        WHERE 
+		        subject_id = #{subjectId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM app_subject 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.app.app.AppSubject">
+    	SELECT <include refid="selectColumns" />
+	    FROM app_subject 
+		<include refid="findPageWhere"/>
+		ORDER BY seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

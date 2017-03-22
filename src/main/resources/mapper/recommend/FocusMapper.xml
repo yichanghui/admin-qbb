@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.recommend.FocusDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id,position,seq AS seq,content_type AS contentType,content_id AS contentId,content_desc AS contentDesc,focus_large_img AS focusLargeImg,focus_thumb_img AS focusThumbImg,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	1=1
+	       <if test="contentType != null">
+				AND content_type = #{contentType}
+			</if>
+	       <if test="contentId != null">
+				AND content_id = #{contentId}
+			</if>
+	       <if test="contentName != null and contentName!='' ">
+				AND content_name like CONCAT('%', #{contentName},'%')
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.recommend.Focus">
+    <![CDATA[
+        INSERT INTO focus (
+        	position,interval_time,seq,content_type,content_id,content_desc,focus_large_img,
+        	focus_thumb_img,created_time,
+        	updated_time,is_effective,content_name
+        ) VALUES (
+        	#{position},#{intervalTime},#{seq},#{contentType} ,#{contentId} ,#{contentDesc} ,
+        	#{focusLargeImg} ,#{focusThumbImg} ,NOW() ,NOW() ,#{isEffective} ,#{contentName} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.recommend.Focus">
+    <![CDATA[
+        UPDATE focus SET
+	        seq = #{seq} ,
+	        position = #{position} ,
+	        interval_time = #{intervalTime} ,
+	        content_desc = #{contentDesc} ,
+	        focus_large_img = #{focusLargeImg} ,
+	        focus_thumb_img = #{focusThumbImg} ,
+	        is_effective = #{isEffective},
+	        updated_time = NOW(),
+	        content_name = #{contentName},
+	        content_type = #{contentType},
+	        content_id = #{contentId}
+        WHERE id=#{id}
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM focus WHERE id=#{id}
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.recommend.Focus">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM focus 
+	        WHERE 
+		        content_type = #{contentType} 
+		     AND   
+		        content_id = #{contentId} LIMIT 0,1
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(1) FROM focus 
+		<include refid="findPageWhere"/>
+    </select>
+    
+<!--     <select id="getList" resultType="com.hiveview.entity.recommend.Focus"> -->
+<!--     	SELECT  -->
+<!--     		h.id AS id, -->
+<!--     		h.interval_time AS intervalTime, -->
+<!--     		h.position AS position, -->
+<!--     		h.seq AS seq, -->
+<!--     		h.content_type AS contentType, -->
+<!--     		h.content_id AS contentId, -->
+<!--     		h.content_desc AS contentDesc, -->
+<!--     		h.focus_large_img AS focusLargeImg, -->
+<!--     		h.focus_thumb_img AS focusThumbImg, -->
+<!--     		h.is_effective    AS isEffective, -->
+<!--     		h.content_name	  AS contentName, -->
+<!--     		f.firstclass_name AS contentTypeName -->
+<!-- 	    FROM focus h -->
+<!-- 	    JOIN class_first f -->
+<!-- 	    ON h.content_type = f.firstclass_id -->
+<!-- 		<include refid="findPageWhere"/> -->
+<!-- 		ORDER BY position ASC,seq ASC -->
+<!-- 		LIMIT #{pageIndex},#{pageSize} -->
+<!--     </select> -->
+    <select id="getList" resultType="com.hiveview.entity.recommend.Focus">
+    	SELECT id,position,content_id AS contentId,interval_time AS intervalTime,content_type AS contentType,seq,content_desc AS contentDesc,focus_large_img AS focusLargeImg,focus_thumb_img AS focusThumbImg,is_effective AS isEffective FROM focus
+		ORDER BY position ASC,seq ASC
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

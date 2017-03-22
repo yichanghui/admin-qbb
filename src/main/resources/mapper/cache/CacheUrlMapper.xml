@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.cache.CacheUrlDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		id AS id,cache_url AS cacheUrl,cache_name AS cacheName,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+			<if test="cacheUrl != null">
+		       <if test="cacheUrl.id != null">
+					AND id = #{cacheUrl.id}
+				</if>
+		       <if test="cacheUrl.cacheUrl != null">
+					AND cache_url like CONCAT('%', #{cacheUrl.cacheUrl}, '%')
+				</if>
+		       <if test="cacheUrl.createTime != null">
+					AND create_time = #{cacheUrl.createTime}
+				</if>
+		       <if test="cacheUrl.isEffective != null">
+					AND is_effective = #{cacheUrl.isEffective}
+				</if>
+		       <if test="cacheUrl.cacheName != null">
+					AND cache_name like CONCAT('%', #{cacheUrl.cacheName} '%')
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.cache.CacheUrl">
+    <![CDATA[
+        INSERT INTO cache_url (
+        	cache_url ,
+        	cache_name ,
+        	create_time ,
+        	is_effective 
+        ) VALUES (
+        	#{cacheUrl} ,
+        	#{cacheName} ,
+        	NOW() ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.cache.CacheUrl">
+    <![CDATA[
+        UPDATE cache_url SET
+	        cache_url = #{cacheUrl} ,
+	        cache_name = #{cacheName} ,
+	        create_time = #{createTime} ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM cache_url WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.cache.CacheUrl">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM cache_url 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM cache_url 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.cache.CacheUrl">
+    	SELECT <include refid="selectColumns" />
+	    FROM cache_url 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

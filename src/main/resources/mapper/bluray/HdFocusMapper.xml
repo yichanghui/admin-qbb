@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.HdFocusDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		seq AS seq,content_type AS contentType,content_id AS contentId,content_desc AS contentDesc,focus_large_img AS focusLargeImg,focus_thumb_img AS focusThumbImg,is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	1=1      				
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="contentType != null">
+				AND content_type = #{contentType}
+			</if>
+	       <if test="contentId != null">
+				AND content_id = #{contentId}
+			</if>
+	       <if test="contentName != null and contentName!='' ">
+				AND content_name like CONCAT('%', #{contentName},'%')
+			</if>
+	       <if test="contentDesc != null and contentDesc!='' ">
+				AND content_desc like CONCAT('%', #{contentDesc},'%')
+			</if>
+	       <if test="focusLargeImg != null">
+				AND focus_large_img = #{focusLargeImg}
+			</if>
+	       <if test="focusThumbImg != null">
+				AND focus_thumb_img = #{focusThumbImg}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.HdFocus">
+    <![CDATA[
+        INSERT INTO hd_focus (
+        	seq ,
+        	content_type ,
+        	content_id ,
+        	content_desc ,
+        	focus_large_img ,
+        	focus_thumb_img ,
+        	created_time ,
+        	updated_time ,
+        	is_effective ,
+        	content_name
+        ) VALUES (
+        	#{seq} ,
+        	#{contentType} ,
+        	#{contentId} ,
+        	#{contentDesc} ,
+        	#{focusLargeImg} ,
+        	#{focusThumbImg} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} ,
+        	#{contentName} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.HdFocus">
+    <![CDATA[
+        UPDATE hd_focus SET
+	        seq = #{seq} ,
+	        content_desc = #{contentDesc} ,
+	        focus_large_img = #{focusLargeImg} ,
+	        focus_thumb_img = #{focusThumbImg} ,
+	        is_effective = #{isEffective},
+	        updated_time = NOW(),
+	        content_name = #{contentName}
+        WHERE 
+	        content_type = #{contentType} 
+		AND
+	        content_id = #{contentId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM hd_focus WHERE
+        seq = #{seq} AND
+        content_type = #{contentType} AND
+        content_id = #{contentId} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.bluray.HdFocus">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM hd_focus 
+	        WHERE 
+		        content_type = #{contentType} 
+		     AND   
+		        content_id = #{contentId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM hd_focus 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.HdFocus">
+    	SELECT 
+    		h.seq AS seq,
+    		h.content_type AS contentType,
+    		h.content_id AS contentId,
+    		h.content_desc AS contentDesc,
+    		h.focus_large_img AS focusLargeImg,
+    		h.focus_thumb_img AS focusThumbImg,
+    		h.is_effective    AS isEffective,
+    		h.content_name	  AS contentName,
+    		f.firstclass_name AS contentTypeName
+	    FROM hd_focus h
+	    JOIN class_first f
+	    ON h.content_type = f.firstclass_id
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective DESC,seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.app.app.AppTopDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		seq AS seq,app_id AS appId,top_type AS topType,created_time AS createdTime,updated_time AS updatedTime,is_effective AS isEffective,category_id AS categoryId
+	    ]]>
+	</sql>
+	<sql id="baseColumns">
+	    <![CDATA[
+		seq ,app_id ,top_type ,created_time ,updated_time ,is_effective ,category_id 
+	    ]]>
+	</sql>
+	<!-- appTop 和  app 的关联信息-->
+	<resultMap id="appTopMap" type="com.hiveview.entity.vo.app.AppTopVo">
+		<id column="app_id" property="appId" />
+		<result column="seq" property="seq" />
+		<result column="top_type" property="topType" />
+		<result column="is_effective" property="isEffective" />
+		<result column="category_id" property="categoryId" />
+		<association  property="app" column="{appId=app_id}" select="AppMapper.getAppInfo" />
+	</resultMap>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="seq != null">
+				AND seq = #{seq}
+			</if>
+	       <if test="appId != null">
+				AND app_id = #{appId}
+			</if>
+	       <if test="topType != null">
+				AND top_type = #{topType}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+	       <if test="categoryId != null">
+				AND category_id = #{categoryId}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.app.app.AppTop">
+    <![CDATA[
+        INSERT INTO app_top (
+        	seq ,
+        	app_id ,
+        	top_type ,
+        	created_time ,
+        	updated_time ,
+        	is_effective ,
+        	category_id 
+        ) VALUES (
+        	#{seq} ,
+        	#{appId} ,
+        	#{topType} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} ,
+        	#{categoryId} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.app.app.AppTop">
+    <![CDATA[
+        UPDATE app_top SET
+	        seq = #{seq} ,
+	        updated_time = NOW() ,
+	        is_effective = #{isEffective} ,
+	        category_id = #{categoryId} ,
+	        app_id = #{appId},
+	        top_type = #{topType}
+        WHERE 
+	        app_id = #{oldAppId} AND
+	        top_type = #{oldTopType} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM app_top WHERE
+        app_id = #{appId} AND
+        top_type = #{topType} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.app.app.AppTop">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM app_top 
+	        WHERE 
+		        app_id = #{appId} AND
+		        top_type = #{topType} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM app_top 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.app.app.AppTop">
+    	SELECT <include refid="selectColumns" />
+	    FROM app_top 
+		<include refid="findPageWhere"/> ORDER BY seq ASC
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    <select id="getAppTopList" resultMap="appTopMap">
+    	SELECT <include refid="baseColumns" />
+	    FROM app_top 
+		<include refid="findPageWhere"/> ORDER BY seq ASC
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

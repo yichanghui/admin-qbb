@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="CpMapper">
+	<resultMap id="CpMap" type="Cp">
+		<id column="cp_id" property="cpId" />
+		<result column="cp_channel_id" property="cpChannelId" jdbcType="INTEGER" />
+		<result column="cp_name" property="cpName" jdbcType="INTEGER" />
+		<result column="cp_create_time" property="cpCreateTime" jdbcType="TIMESTAMP" />
+		<result column="cp_state"  property="cpState" jdbcType="TINYINT"/>
+	</resultMap>
+
+	<select id="getCpList" parameterType="map" resultMap="CpMap">
+		SELECT c.cp_id,c.cp_name FROM cp as c WHERE cp_state = 1
+	</select>
+	<select id="get" parameterType="map" resultMap="CpMap">
+		SELECT cp_id,cp_name FROM cp as c WHERE cp_id = #{cpId}
+	</select>
+	
+		<select id="getCpByPage" parameterType="map" resultMap="CpMap">
+		SELECT cp_id,cp_name,cp_state FROM cp
+		<where>
+		<if test="cp!=null">
+			<if test="cp.cpName!=null">
+				AND cp_name LIKE CONCAT ('%',#{cp.cpName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="cp.cpState!=null">
+				AND cp_state = #{cp.cpState,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		ORDER BY cp_create_time
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCpByDeviceByCpChannelId" parameterType="map" resultMap="CpMap">
+		SELECT t1.cp_id AS CpId,t3.cp_name AS cpName,t1.cp_channel_id AS cpChannelId FROM device t1 LEFT JOIN cp_channel t2
+		ON t1.cp_channel_id = t2.cp_channel_id LEFT JOIN cp t3 ON t3.cp_id = t1.cp_id
+		WHERE t1.cp_channel_id = t2.cp_channel_id
+		<if test="cpchannelIds!=null">
+			AND t1.cp_channel_id IN (cpchannelIds)
+		</if>
+		GROUP BY t1.cp_channel_id,t1.cp_id
+	</select>
+	
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM  cp
+		<where>
+		<if test="cp!=null">
+			<if test="cp.cpName!=null">
+				AND cp_name LIKE CONCAT ('%',#{cp.cpName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="cp.cpState!=null">
+				AND cp_state = #{cp.cpState,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+	</select>
+
+	<update id="update" parameterType="Cp">
+		UPDATE cp
+		<set>
+		<if test="cpName!=null">
+		cp_name=#{cpName,jdbcType=VARCHAR},
+		</if>
+		<if test="cpState!=null">
+		cp_state=#{cpState,jdbcType=TINYINT}
+		</if>
+		</set>
+		WHERE cp_id=#{cpId,jdbcType=BIGINT}
+	</update>
+
+	<insert id="add" parameterType="Cp" useGeneratedKeys="true"
+		keyProperty="cpId">
+		INSERT INTO cp
+		(cp_name,cp_create_time,cp_state)
+		VALUES
+		(#{cpName},#{cpCreateTime},#{cpState})
+	</insert>
+	
+	<delete id="cpId" parameterType="Long">
+		DELETE FROM cp WHERE cp_id=#{cpId}
+	</delete>
+	
+</mapper>

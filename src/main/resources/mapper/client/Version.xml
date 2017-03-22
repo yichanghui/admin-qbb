@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="VersionMapper">
+	<resultMap id="versionMap" type="Version">
+		<id column="cvid" property="cvId" jdbcType="INTEGER" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="updatetime" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="type"  property="type" jdbcType="INTEGER"/>
+		<result column="features"  property="features" jdbcType="VARCHAR"/>
+		<result column="url"  property="url" jdbcType="VARCHAR"/>
+		<result column="is_effective"  property="isEffective" jdbcType="INTEGER"/>
+		<result column="cp_channel_id"  property="cpChannelId" jdbcType="BIGINT"/>
+		<result column="size"  property="size" jdbcType="BIGINT"/>
+		<result column="MD5"  property="MD5" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="versionUpdateMap" type="com.hiveview.entity.po.client.VersionUpdatePo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="cvid" property="cvid" jdbcType="INTEGER" />
+		<result column="cp_id" property="cpId" jdbcType="INTEGER" />
+		<result column="cp_channel_id" property="cpChannelId" jdbcType="INTEGER" />
+		<result column="version"  property="version" jdbcType="VARCHAR"/>
+		<result column="hardware_id"  property="hardwareId" jdbcType="BIGINT"/>
+	</resultMap>
+	<resultMap type="com.hiveview.entity.client.Cp" id="CpMapForVersion">
+		<result column="cp_id" property="cpId" jdbcType="BIGINT" />
+		<result column="cp_name" property="cpName" jdbcType="VARCHAR" />
+		<collection column="cp_id"  property="hardware" select="com.hiveview.dao.client.HardwareDao.getHardwareListForVersion" ofType="HardwareDao" />
+	</resultMap>
+
+	<select id="getVersionByPage" parameterType="map" resultMap="versionMap">
+		SELECT * FROM sys_version
+		<where>
+		<if test="version!=null">
+			<if test="version.version!=null">
+				AND version LIKE CONCAT ('%',#{version.version,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="version.isEffective!=null">
+				AND is_effective = #{version.isEffective,jdbcType=INTEGER}
+			</if>
+			<if test="version.cpChannelId!=null">
+				AND cp_channel_id = #{version.cpChannelId,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getVersionUpdateByPage" parameterType="map" resultType="com.hiveview.entity.bo.client.VersionUpdateBo">
+		SELECT t1.id,cvid,t2.cp_id AS cpId,t2.cp_name AS cpName,t3.cp_channel_id AS cpChannelId,t3.cp_channel_name AS cpChannelName,t4.hardware_no AS hardwareNo FROM sys_version_update t1 LEFT JOIN cp t2
+		ON t2.cp_id = t1.cp_id LEFT JOIN cp_channel t3 
+		ON t3.cp_channel_id = t1.cp_channel_id LEFT JOIN hardware t4 
+		ON t4.id = t1.hardware_id
+		<where>
+			<if test="cvid!=null">
+				AND cvid = #{cvid,jdbcType=INTEGER}
+			</if>
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getVersionUpdateByPageCount" parameterType="map" resultType="com.hiveview.entity.bo.client.VersionUpdateBo">
+		SELECT COUNT(1) FROM sys_version_update t1 LEFT JOIN cp t2
+		ON t2.cp_id = t1.cp_id LEFT JOIN cp_channel t3 
+		ON t3.cp_channel_id = t1.cp_channel_id LEFT JOIN hardware t4 
+		ON t4.id = t1.hardware_id
+		<where>
+			<if test="cvid!=null">
+				AND cvid = #{cvid,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="getVersionCount" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM sys_version_update
+		<where>
+			<if test="cvid!=null">
+				AND cvid = #{cvid,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCpListForSelect" parameterType="map" resultMap="CpMapForVersion">
+		SELECT cp_id,cp_name FROM cp WHERE cp_state = 1
+	</select>
+	
+	<select id="getCpChannelForVersion" parameterType="map" resultType="com.hiveview.entity.bo.client.CpChannelBo">
+	<!-- ### 通过厂商获得分公司  -->
+	SELECT t2.cp_channel_id AS cpChannelId,t2.cp_channel_name AS cpChannelName FROM device t1 LEFT JOIN cp_channel t2
+	ON t2.cp_channel_id = t1.cp_channel_id
+	WHERE t2.cp_channel_id = t1.cp_channel_id AND t1.cp_id = #{cpId} AND t1.cp_channel_id NOT IN (SELECT cp_channel_id FROM sys_version_update WHERE cvid = #{cvid} AND hardware_id = #{hardwareId})
+	GROUP BY t2.cp_channel_id
+	LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getCpChannelForVersionCount" parameterType="map" resultType="int">
+	<!-- ### 通过厂商获得分公司数量  -->
+	SELECT COUNT(1) FROM (SELECT t1.id FROM device t1 LEFT JOIN cp_channel t2
+	ON t2.cp_channel_id = t1.cp_channel_id
+	WHERE t2.cp_channel_id = t1.cp_channel_id AND t1.cp_id = #{cpId} AND t1.cp_channel_id NOT IN (SELECT cp_channel_id FROM sys_version_update WHERE cvid = #{cvid} AND hardware_id = #{hardwareId})
+	GROUP BY t2.cp_channel_id) temp
+	</select>
+	<insert id="batchAddVersionUpdate" parameterType="java.util.List">
+		INSERT INTO sys_version_update (cvid,cp_id,cp_channel_id,version,hardware_id) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.cvid},#{item.cpId},#{item.cpChannelId},#{item.version},#{item.hardwareId})
+		</foreach>
+	</insert>
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM sys_version
+		<where>
+		<if test="version!=null">
+			<if test="version.version!=null">
+				AND version LIKE CONCAT ('%',#{version.version,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="version.isEffective!=null">
+				AND is_effective = #{version.isEffective,jdbcType=INTEGER}
+			</if>
+			<if test="version.cpChannelId!=null">
+				AND cp_channel_id = #{version.cpChannelId,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+	</select>
+
+	<update id="update" parameterType="Version">
+		UPDATE sys_version
+		<set>
+		<if test="version!=null">
+		version=#{version,jdbcType=VARCHAR},
+		</if>
+		<if test="updateTime!=null">
+		updatetime=#{updateTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="type!=null">
+		type=#{type,jdbcType=INTEGER},
+		</if>
+		<if test="features!=null">
+		features=#{features,jdbcType=VARCHAR},
+		</if>
+		<if test="url!=null">
+		url=#{url,jdbcType=VARCHAR},
+		</if>
+		<if test="isEffective!=null">
+		is_effective=#{isEffective,jdbcType=INTEGER},
+		</if>
+		<if test="cpChannelId!=null">
+		cp_channel_id=#{cpChannelId,jdbcType=INTEGER},
+		</if>
+		<if test="size!=null">
+		size=#{size,jdbcType=BIGINT},
+		</if>
+		<if test="MD5!=null">
+		MD5=#{MD5,jdbcType=VARCHAR}
+		</if>
+		</set>
+		WHERE cvid=#{cvId,jdbcType=INTEGER}
+	</update>
+
+	<insert id="add" parameterType="Version" useGeneratedKeys="true"
+		keyProperty="cvId">
+		INSERT INTO sys_version
+		(cvid,version,updatetime,type,features,url,cp_channel_id,is_effective,size,MD5)
+		VALUES
+		(#{cvId},#{version},#{updateTime},#{type},#{features},#{url},#{cpChannelId},#{isEffective},#{size},#{MD5})
+	</insert>
+	
+	<insert id="addSysVersionUpdate" parameterType="com.hiveview.entity.po.client.VersionUpdatePo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO sys_version_update (cvid,cp_id,cp_channel_id,version,hardware_id) VALUES
+		(#{cvid},#{cpId},#{cpChannelId},#{version},#{hardwareId})
+	</insert>
+	
+	<delete id="deleteSysVersion" parameterType="int">
+		DELETE FROM sys_version WHERE cvid = #{cvid} 
+	</delete>
+	
+	<delete id="deleteSysVersionUpdate" parameterType="map">
+		DELETE FROM sys_version_update
+		<where>
+			<if test="cvid!=null">
+				AND cvid = #{cvid,jdbcType=INTEGER}
+			</if>
+			<if test="id!=null">
+				AND id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</delete>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="WeatherIocnMapper">
+	<resultMap id="weatherIconMap" type="com.hiveview.entity.app.WeatherIcon">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="day_icon" property="dayIcon" jdbcType="VARCHAR"/>
+		<result column="night_icon" property="nightIcon" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+	<!-- 分页获取剧集播放地址 -->
+	<select id="getVersionByPage" parameterType="map" resultMap="weatherIconMap">
+		SELECT id,name,day_icon,night_icon FROM weather_icon
+		<where>
+			<if test="weatherIcon!=null">
+				<if test="weatherIcon.name!=null">
+					and name like CONCAT('%',#{weatherIcon.name,jdbcType=VARCHAR},'%')
+				</if>
+			</if>
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 获取播放地址总记录条数 -->
+	<select id="getCount" parameterType="map"  resultType="INTEGER">
+		SELECT COUNT(*) FROM weather_icon
+		<where>
+			<if test="weatherIcon!=null">
+				<if test="weatherIcon.name!=null">
+					and name like CONCAT('%',#{weatherIcon.name,jdbcType=VARCHAR},'%')
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 添加剧集播放地址 -->
+	<insert id="add" parameterType="WeatherIcon" >
+		insert into weather_icon(name,day_icon,night_icon,create_time,update_time) 
+		values(#{name,jdbcType=VARCHAR},#{dayIcon,jdbcType=VARCHAR},#{nightIcon,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 修改剧集播放地址 -->
+	<update id="update" parameterType="WeatherIcon">
+		update weather_icon set name=#{name,jdbcType=VARCHAR},day_icon=#{dayIcon,jdbcType=VARCHAR},night_icon=#{nightIcon,jdbcType=VARCHAR},update_time=#{updateTime,jdbcType=TIMESTAMP}
+		where id=#{id,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

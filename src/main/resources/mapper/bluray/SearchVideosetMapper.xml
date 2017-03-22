@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.bluray.SearchVideosetDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		sequence AS sequence,videoset_id AS videosetId,is_effective AS isEffective,
+		videoset_type AS videosetType,videoset_name AS videosetname,videoset_img AS videosetImg
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 1=1	      				
+	       <if test="sequence != null">
+				AND sequence = #{sequence}
+			</if>
+	       <if test="videosetId != null">
+				AND videoset_id = #{videosetId}
+			</if>
+	       <if test="isEffective != null">
+				AND is_effective = #{isEffective}
+			</if>
+	       <if test="videosetType != null">
+				AND videoset_type = #{videosetType}
+			</if>
+	       <if test="videosetName != null">
+				AND videoset_img = #{videosetName}
+			</if>
+	       <if test="videosetImg != null">
+				AND videoset_img = #{videosetImg}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.bluray.SearchVideoset">
+    <![CDATA[
+        INSERT INTO search_videoset (
+        	sequence ,
+        	videoset_id ,
+        	update_time ,
+        	is_effective ,
+        	videoset_type ,
+        	videoset_name ,
+        	videoset_img
+        ) VALUES (
+        	#{sequence} ,
+        	#{videosetId} ,
+        	NOW() ,
+        	#{isEffective} ,
+        	#{videosetType} ,
+        	#{videosetName} ,
+        	#{videosetImg}
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.bluray.SearchVideoset">
+    <![CDATA[
+        UPDATE search_videoset SET
+	        sequence = #{sequence} ,
+	        update_time = NOW() ,
+	        is_effective = #{isEffective}
+        WHERE 
+	        videoset_type = #{videosetType}
+	       AND 
+	        videoset_id = #{videosetId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM search_videoset WHERE
+        videoset_type = #{videosetType} AND
+        videoset_id = #{videosetId} 
+    ]]>
+    </delete>
+    <select id="get" resultType="com.hiveview.entity.bluray.SearchVideoset">
+    	SELECT <include refid="selectColumns" />
+    	FROM search_videoset
+    	WHERE
+    			videoset_type = #{videosetType}
+    		AND
+    			videoset_id = #{videosetId}
+    </select>
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM search_videoset 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.bluray.SearchVideoset">
+    	SELECT <include refid="selectColumns" />
+	    FROM search_videoset 
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective,sequence
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <select id="getSearchList" resultType="com.hiveview.entity.bluray.SearchVideoset">
+	    SELECT <include refid="selectColumns" />
+	    FROM search_videoset 
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective DESC,sequence
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

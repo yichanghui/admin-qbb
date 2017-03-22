@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="AppVersionMapper">
+	<resultMap id="AppVersionMap" type="com.hiveview.entity.app.AppVersion">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="app_id" property="appId" jdbcType="INTEGER" />
+		<result column="version_no" property="versionNo" jdbcType="VARCHAR" />
+		<result column="app_size"  property="appSize" jdbcType="VARCHAR"/>
+		<result column="size"  property="appSize" jdbcType="BIGINT"/>
+		<result column="version_describe"  property="versionDescribe" jdbcType="INTEGER"/>
+		<result column="state"  property="state" jdbcType="INTEGER"/>
+		<result column="version_url"  property="versionUrl" jdbcType="VARCHAR"/>
+		<result column="create_time"  property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time"  property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="MD5"  property="MD5" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="getAppVersionList" parameterType="map" resultMap="AppVersionMap">
+		SELECT id,app_id,version_no,app_size,version_describe,state,version_url FROM app_version WHERE app_id = #{appVersion.appId}
+		<if test="appVersion.versionNo!=null">
+			AND version_no LIKE CONCAT ('%',#{appVersion.versionNo,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="appVersion.state!=null">
+			AND state=#{appVersion.state,jdbcType=VARCHAR}
+		</if>
+		ORDER BY create_time ASC LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<select id="getCount" parameterType="AppVersion" resultType="int">
+		SELECT COUNT(*) FROM app_version WHERE app_id = #{appId}
+		<if test="versionNo!=null">
+			AND version_no LIKE CONCAT ('%',#{versionNo,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="state!=null">
+			AND state=#{state,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="getAppVersionById" parameterType="int" resultMap="AppVersionMap">
+		SELECT * FROM app_version WHERE id=#{id}
+	</select>
+	
+	<update id="update" parameterType="AppVersion">
+		UPDATE app_version
+		<set>
+		update_time=#{updateTime,jdbcType=TIMESTAMP},
+		<if test="versionNo!=null">
+		version_no=#{versionNo,jdbcType=VARCHAR},
+		</if>
+		<if test="appSize!=null">
+		app_size=#{appSize,jdbcType=VARCHAR},
+		</if>
+		<if test="size!=null">
+		size=#{size,jdbcType=BIGINT},
+		</if>
+		<if test="MD5!=null">
+		MD5=#{MD5,jdbcType=VARCHAR},
+		</if>
+		<if test="versionDescribe!=null">
+		version_describe=#{versionDescribe,jdbcType=VARCHAR},
+		</if>
+		<if test="versionUrl!=null">
+		version_url=#{versionUrl,jdbcType=VARCHAR},
+		</if>
+		<if test="state!=null">
+		state=#{state,jdbcType=INTEGER},
+		</if>
+		</set>
+		WHERE id=#{id,jdbcType=INTEGER}
+	</update>
+
+	<insert id="save" parameterType="AppVersion" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO app_version
+		(app_id,version_no,app_size,size,version_describe,state,create_time,version_url,MD5)
+		VALUES	(#{appId},#{versionNo},#{appSize},#{size},#{versionDescribe},1,#{createTime},#{versionUrl},#{MD5})
+	</insert>
+	
+	<update id="delete">
+		UPDATE app_version SET state = 0 WHERE id=#{id}
+	</update>
+</mapper>

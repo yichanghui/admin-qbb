@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="VideoUrlMapper">
+	<resultMap id="videoUrlMap" type="com.hiveview.entity.video.VideoUrl">
+		<id column="video_id" property="videoId" jdbcType="VARCHAR" />
+		<id column="video_type" property="videoType" jdbcType="TINYINT"/>
+		<result column="vid" property="vid" jdbcType="VARCHAR"/>
+		<result column="m3u8" property="m3u8" jdbcType="VARCHAR" />
+		<result column="mp4" property="mp4" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="update_time"  property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="is_effective" property="isEffective" jdbcType="TINYINT"/>
+	</resultMap>
+	
+	<!-- 分页获取剧集播放地址 -->
+	<select id="getVideoUrlByPage" parameterType="map" resultMap="videoUrlMap">
+		select *  from  video_url 
+		<where>
+			<if test="videoUrl!=null">
+				<if test="videoUrl.videoId!=null">
+					and video_id = #{videoUrl.videoId,jdbcType=VARCHAR}
+				</if>
+				<if test="videoUrl.videoType!=null">
+					and video_type = #{videoUrl.videoType,jdbcType=INTEGER}
+				</if>
+				<if test="videoUrl.isEffective!=null and videoUrl.isEffective!=-1">
+					and is_effective = #{videoUrl.isEffective,jdbcType=INTEGER}
+				</if>
+				<if test="videoUrl.vid!=null">
+					and vid = #{videoUrl.vid,jdbcType=INTEGER}
+				</if>
+			</if>
+		</where>
+		LIMIT #{currentPage},#{pageSize}
+	</select>
+	
+	<!-- 获取播放地址总记录条数 -->
+	<select id="getVideoUrlCountByPage" parameterType="map"  resultType="INTEGER">
+		select count(*)  from  video_url
+		<where>
+			<if test="videoUrl!=null">
+				<if test="videoUrl.videoId!=null">
+					and video_id = #{videoUrl.videoId,jdbcType=VARCHAR}
+				</if>
+				<if test="videoUrl.videoType!=null">
+					and video_type = #{videoUrl.videoType,jdbcType=INTEGER}
+				</if>
+				<if test="videoUrl.isEffective!=null and videoUrl.isEffective!=-1">
+					and is_effective = #{videoUrl.isEffective,jdbcType=INTEGER}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 添加剧集播放地址 -->
+	<insert id="addVideoUrl" parameterType="VideoUrl" >
+		insert into video_url(video_id,video_type,vid,m3u8,mp4,start_time,end_time,is_effective) 
+		values(#{videoId,jdbcType=VARCHAR},#{videoType,jdbcType=INTEGER},#{vid,jdbcType=INTEGER},#{m3u8,jdbcType=VARCHAR},
+				#{mp4,jdbcType=VARCHAR},#{startTime,jdbcType=VARCHAR},#{endTime,jdbcType=VARCHAR},#{isEffective,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 修改剧集播放地址 -->
+	<update id="updateVideoUrl" parameterType="VideoUrl">
+		update video_url set m3u8=#{m3u8,jdbcType=VARCHAR},mp4=#{mp4,jdbcType=VARCHAR},vid=#{vid},start_time=#{startTime,jdbcType=VARCHAR},end_time=#{endTime,jdbcType=VARCHAR},is_effective=#{isEffective,jdbcType=INTEGER}
+		WHERE video_id=#{videoId,jdbcType=VARCHAR} AND video_type=#{videoType,jdbcType=INTEGER} AND vid=#{vid,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateVideoType" parameterType="map">
+	 <![CDATA[
+		UPDATE video_url SET video_type = #{videoType,jdbcType=INTEGER}
+		WHERE video_type <> #{videoType,jdbcType=INTEGER} AND video_id IN 
+		(SELECT t1.video_id FROM video t1 WHERE t1.videoset_id = #{videosetId,jdbcType=INTEGER})
+	]]>
+	</update>
+	
+	<update id="updatePlayUrlIsEff" parameterType="map">
+		update video_url set is_effective=#{isEffective} where video_id=#{videoId}
+	</update>
+
+
+	<!-- 删除剧集播放地址 -->
+	<delete id="delVideoUrl" parameterType="map">
+		delete from video_url where	video_id=#{videoUrl.videoId,jdbcType=VARCHAR}  and video_type=#{videoUrl.videoType,jdbcType=INTEGER} and vid=#{videoUrl.vid,jdbcType=INTEGER}
+	</delete>
+
+	
+
+</mapper>

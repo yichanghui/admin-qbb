@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="WeatherWallpaperMapper">
+	<resultMap id="weatherWallpaperMap" type="com.hiveview.entity.app.WeatherWallpaper">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="weather_icon_id" property="weatherIconId" jdbcType="INTEGER"/>
+		<result column="day_wallpaper" property="dayWallpaper" jdbcType="VARCHAR"/>
+		<result column="night_wallpaper" property="nightWallpaper" jdbcType="VARCHAR"/>
+		<result column="wallpaper_state" property="wallpaperState" jdbcType="INTEGER"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+	<!-- 分页背景图片 -->
+	<select id="getWeatherByPage" parameterType="map" resultMap="weatherWallpaperMap">
+		SELECT * FROM weather_wallpaper WHERE 1=1
+		<if test="weatherWallpaper!=null">
+			<if test="weatherWallpaper.weatherIconId!=null">
+				AND weather_icon_id = #{weatherWallpaper.weatherIconId,jdbcType=INTEGER}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 获取播放地址总记录条数 -->
+	<select id="getCount" parameterType="map"  resultType="INTEGER">
+		SELECT COUNT(*) FROM  weather_wallpaper WHERE 1=1
+		<if test="weatherWallpaper!=null">
+			<if test="weatherWallpaper.weatherIconId!=null">
+				AND weather_icon_id = #{weatherWallpaper.weatherIconId,jdbcType=INTEGER}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 添加剧集播放地址 -->
+	<insert id="add" parameterType="WeatherWallpaper" >
+		insert into weather_wallpaper(weather_icon_id,day_wallpaper,night_wallpaper,wallpaper_state,create_time,update_time) 
+		values(#{weatherIconId,jdbcType=INTEGER},#{dayWallpaper,jdbcType=VARCHAR},#{nightWallpaper,jdbcType=VARCHAR},#{wallpaperState,jdbcType=INTEGER},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 修改剧集播放地址 -->
+	<update id="update" parameterType="WeatherWallpaper">
+		UPDATE weather_wallpaper SET day_wallpaper=#{dayWallpaper,jdbcType=VARCHAR},night_wallpaper=#{nightWallpaper,jdbcType=VARCHAR},wallpaper_state=#{wallpaperState,jdbcType=VARCHAR},update_time=#{updateTime,jdbcType=VARCHAR}
+		WHERE id=#{id,jdbcType=INTEGER}
+	</update>
+
+	<!-- 删除剧集播放地址 -->
+	<delete id="delete" parameterType="map">
+		DELETE FROM weather_wallpaper WHERE id=#{id,jdbcType=INTEGER}
+	</delete>
+
+	
+
+</mapper>

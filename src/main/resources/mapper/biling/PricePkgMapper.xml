@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.biling.PricePkgDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		price_pkg_id AS pricePkgId,seq AS seq,name AS name,pic AS pic,price_desc AS priceDesc,price AS price,vip_price AS vipPrice,discount_id AS discountId,discount_name AS discountName,expiry_time AS expiryTime,expiry_play AS expiryPlay,state AS state
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where> 	      				
+	       <if test="pricePkgId != null">
+				AND price_pkg_id = #{pricePkgId}
+			</if>
+	       <if test="name != null">
+				AND name LIKE CONCAT ('%',#{name,jdbcType=VARCHAR},'%')
+			</if>
+	       <if test="price != null">
+				AND price = #{price}
+			</if>
+	       <if test="vipPrice != null">
+				AND vip_price = #{vipPrice}
+			</if>
+	       <if test="discountId != null">
+				AND discount_id = #{discountId}
+			</if>
+	       <if test="expiryPlay != null">
+				AND expiry_play = #{expiryPlay}
+			</if>
+	       <if test="state != null">
+				AND state = #{state}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.biling.PricePkg">
+    <![CDATA[
+        INSERT INTO price_pkg (
+        	price_pkg_id ,
+        	seq ,
+        	name ,
+        	pic ,
+        	price_desc ,
+        	price ,
+        	vip_price ,
+        	discount_id ,
+        	discount_name ,
+        	expiry_time ,
+        	expiry_play ,
+        	state ,
+        	c_time ,
+        	u_time 
+        ) VALUES (
+        	#{pricePkgId} ,
+        	#{seq} ,
+        	#{name} ,
+        	#{pic} ,
+        	#{priceDesc} ,
+        	#{price} ,
+        	#{vipPrice} ,
+        	#{discountId} ,
+        	#{discountName} ,
+        	#{expiryTime} ,
+        	#{expiryPlay} ,
+        	#{state} ,
+        	#{ctime} ,
+        	#{utime} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.biling.PricePkg">
+    <![CDATA[
+        UPDATE price_pkg SET
+	        seq = #{seq} ,
+	        name = #{name} ,
+	        pic = #{pic} ,
+	        price_desc = #{priceDesc} ,
+	        price = #{price} ,
+	        vip_price = #{vipPrice} ,
+	        discount_id = #{discountId} ,
+	        discount_name = #{discountName} ,
+	        expiry_time = #{expiryTime} ,
+	        expiry_play = #{expiryPlay} ,
+	        state = #{state} ,
+	        c_time = #{ctime} ,
+	        u_time = #{utime} 
+        WHERE 
+	        price_pkg_id = #{pricePkgId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM price_pkg WHERE price_pkg_id = #{pricePkgId} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.biling.PricePkg">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM price_pkg WHERE price_pkg_id = #{pricePkgId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT COUNT(1) FROM price_pkg 
+		<include refid="findPageWhere"/>
+    </select>
+    
+    <select id="getListByPage" resultType="com.hiveview.entity.biling.PricePkg">
+    	SELECT <include refid="selectColumns" />
+	    FROM price_pkg <include refid="findPageWhere"/>
+		LIMIT #{skipNo},#{rows}
+    </select>
+</mapper>
+

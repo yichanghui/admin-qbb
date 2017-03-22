@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.biling.DiscountDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		discount_id AS discountId,discount_name AS discountName,state AS state
+	    ]]>
+	</sql>
+	
+	<resultMap id="DiscountMap" type="com.hiveview.entity.vo.biling.DiscountVo">
+		<id column="discount_id" property="discountId" />
+		<result column="discount_name" property="discountName"/>
+		<result column="state" property="state" />
+	</resultMap>
+	
+	<sql id="findPageWhere">
+		<where>    				
+	       <if test="discountId != null">
+				AND discount_id = #{discountId}
+			</if>
+	       <if test="discountName != null">
+				AND discount_name like CONCAT('%','${discountName}','%' )
+			</if>
+	       <if test="state != null">
+				AND state = #{state}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.biling.Discount">
+    <![CDATA[
+        INSERT INTO discount (
+        	discount_name ,
+        	state ,
+        	create_time ,
+        	update_time
+        ) VALUES (
+        	#{discountName} ,
+        	#{state} ,
+        	NOW() ,
+        	NOW() 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.biling.Discount">
+    <![CDATA[
+        UPDATE discount SET
+	        discount_name = #{discountName} ,
+	        state = #{state} ,
+	        update_time = #{updateTime}
+        WHERE 
+	        discount_id = #{discountId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM discount 
+        WHERE
+        	discount_id = #{discountId} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.biling.Discount">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM discount 
+	        WHERE 
+		        discount_id = #{discountId} 
+	    ]]>
+	</select>
+	
+	<select id="getByDiscountName" resultType="com.hiveview.entity.biling.Discount">
+		SELECT <include refid="selectColumns" />
+	    <![CDATA[
+		    FROM discount 
+	        WHERE 
+		        discount_id = #{discountId}
+		    AND
+		        discount_name = #{discountName} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM discount 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.biling.Discount">
+    	SELECT <include refid="selectColumns" />
+	    FROM discount 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+    
+    <select id="getInfoList" resultMap="DiscountMap">
+    	SELECT <include refid="selectColumns" />
+	    FROM discount 
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="DeviceMapper">
+	<resultMap id="deviceMap" type="com.hiveview.entity.vo.client.DeviceInfoVo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="device_id" property="deviceId" jdbcType="BIGINT" />
+		<result column="device_mac" property="deviceMac" jdbcType="VARCHAR" />
+		<result column="device_state" property="deviceState" jdbcType="INTEGER" />
+		<result column="device_version"  property="deviceVersion" jdbcType="VARCHAR"/>
+		<result column="cp_channel_id"  property="cpChannelId" jdbcType="BIGINT"/>
+		<result column="cp_id"  property="cpId" jdbcType="BIGINT"/>
+		<result column="device_sn"  property="deviceSn" jdbcType="BIGINT"/>
+		<result column="rom_version"  property="romVersion" jdbcType="BIGINT"/>
+		<result column="hardware_id"  property="hardwareId" jdbcType="BIGINT"/>
+		<association  property="cp" column="{cpId=cp_id}" select="CpMapper.get" />
+		<association  property="hardware" column="{id=hardware_id}" select="com.hiveview.dao.client.HardwareDao.get" />
+		<association  property="cpChannel" column="{cpChannelId=cp_channel_id}" select="CpChannelMapper.get" />
+	</resultMap>
+	
+	<resultMap id="deviceLogMap" type="com.hiveview.entity.client.DeviceLog">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="device_id" property="deviceId" jdbcType="BIGINT" />
+		<result column="device_mac" property="deviceMac" jdbcType="VARCHAR" />
+		<result column="device_state" property="deviceState" jdbcType="INTEGER" />
+		<result column="device_version"  property="deviceVersion" jdbcType="VARCHAR"/>
+		<result column="device_create_time"  property="deviceCreateTime" jdbcType="TIMESTAMP"/>
+		<result column="cp_channel_id"  property="cpChannelId"/>
+		<result column="cp_id"  property="cpId" />
+		<result column="device_sn"  property="deviceSn" jdbcType="BIGINT"/>
+		<result column="rom_version"  property="romVersion" jdbcType="BIGINT"/>
+		<result column="hardware_id"  property="hardwareId" jdbcType="BIGINT"/>
+	</resultMap>
+
+	<select id="getDeviceList" parameterType="com.hiveview.entity.client.Device" resultMap="deviceLogMap">
+		SELECT id,device_id,device_mac,device_state,device_version,cp_channel_id,cp_id,device_sn,rom_version,hardware_id 
+		FROM device
+		<where>
+			<if test="deviceState!=null">
+				AND device_state = #{deviceState}
+			</if>
+		</where>
+		ORDER BY device_state desc,device_create_time,id
+		LIMIT #{skipNo},#{pageSize}
+	</select>
+	
+	<select id="getDeviceByPage" parameterType="map" resultMap="deviceMap">
+		SELECT id,device_id,device_mac,device_state,device_version,device_last_ip,cp_channel_id,cp_id,device_sn,rom_version,hardware_id 
+		FROM device
+		<where>
+		<if test="device!=null">
+			<if test="device.cpChannelId!=null and device.cpChannelId!=-1">
+				AND cp_channel_id = #{device.cpChannelId}
+			</if>
+			<if test="device.cpId!=null and device.cpId!=-1">
+				AND cp_id = #{device.cpId}
+			</if>
+			<if test="device.deviceState!=null">
+				AND device_state = #{device.deviceState}
+			</if>
+		</if>
+		</where>
+		ORDER BY device_state desc,device_create_time DESC LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM device
+		<where>
+		<if test="device!=null">
+			<if test="device.cpChannelId!=null and device.cpChannelId!=-1">
+				AND cp_channel_id = #{device.cpChannelId}
+			</if>
+			<if test="device.cpId!=null and device.cpId!=-1">
+				AND cp_id = #{device.cpId}
+			</if>
+			<if test="device.deviceState!=null">
+				AND device_state = #{device.deviceState}
+			</if>
+		</if>
+		</where>
+	</select>
+
+	<update id="update" parameterType="Device">
+		UPDATE device
+		<set>
+		<if test="deviceId!=null">
+		device_id=#{deviceId,jdbcType=VARCHAR},
+		</if>
+		<if test="deviceMac!=null">
+		device_mac=#{deviceMac,jdbcType=VARCHAR},
+		</if>
+		<if test="deviceState!=null">
+		device_state=#{deviceState,jdbcType=INTEGER},
+		</if>
+		<if test="deviceVersion!=null">
+		device_version=#{deviceVersion,jdbcType=VARCHAR},
+		</if>
+		<if test="deviceCreateTime!=null">
+		device_create_time=#{deviceCreateTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="deviceLastTime!=null">
+		device_last_time=#{deviceLastTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="deviceLastIp!=null">
+		device_last_ip=#{deviceLastIp,jdbcType=VARCHAR},
+		</if>
+		<if test="cpChannelId!=null">
+		cp_channel_id=#{cpChannelId,jdbcType=BIGINT},
+		</if>
+		<if test="cpId!=null">
+		cp_id=#{cpId,jdbcType=BIGINT},
+		</if>
+		<if test="deviceSn!=null">
+		device_sn=#{deviceSn,jdbcType=BIGINT},
+		</if>
+		<if test="romVersion!=null">
+		rom_version=#{romVersion,jdbcType=BIGINT},
+		</if>
+		<if test="hardwareId!=null">
+		hardware_id=#{hardwareId,jdbcType=BIGINT},
+		</if>
+		</set>
+		WHERE id =#{id,jdbcType=BIGINT}
+	</update>
+
+	<insert id="add" parameterType="Device" useGeneratedKeys="true" keyProperty="deviceId">
+		INSERT INTO device
+		(device_id,device_mac,device_state,device_version,device_create_time,device_last_time,device_last_ip,cp_channel_id,cp_id,device_sn,rom_version,hardware_id)
+		VALUES
+		(#{deviceId},#{deviceMac},#{deviceState},#{deviceVersion},NOW(),NOW(),#{deviceLastIp},#{cpChannelId},#{cpId},#{deviceSn},#{romVersion},#{hardwareId})
+	</insert>
+	
+	<insert id="addForeach" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO device (device_id,device_mac,device_create_time,device_state,device_version,cp_channel_id,cp_id,device_sn,rom_version,hardware_id) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.deviceId},#{item.deviceMac},NOW(),#{item.deviceState},#{item.deviceVersion},#{item.cpChannelId},#{cpId},#{deviceSn},#{romVersion},#{hardwareId})
+		</foreach>
+	</insert>
+	
+	<delete id="delete" parameterType="Device">
+		delete FROM device where id=#{id}
+	</delete>
+
+	<update id="batchUpdate" parameterType="com.hiveview.entity.client.DeviceLog">
+		UPDATE device SET cp_id=#{item.cpId},hardware_id=#{item.hardwareId},cp_channel_id=#{item.cpChannelId},rom_version=#{item.romVersion},device_state=#{item.deviceState} WHERE
+		<foreach collection="list" item="item" index="index" separator="or">
+			id = #{item.id}
+		</foreach>
+	</update>
+</mapper>

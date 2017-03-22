@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="VideoSetMapper">
+	<resultMap id="videosetMap" type="com.hiveview.entity.video.VideoSet">
+		<id column="videoset_id" property="videosetId" jdbcType="BIGINT" />
+		<result column="videoset_name" property="videosetName" jdbcType="VARCHAR" />
+		<result column="videoset_img" property="videosetImg" jdbcType="VARCHAR" />
+		<result column="videoset_focus" property="videosetFocus" jdbcType="VARCHAR" />
+		<result column="videoset_brief" property="videosetBrief" jdbcType="VARCHAR" />
+		<result column="keyword" property="keyWord" jdbcType="VARCHAR" />
+		<result column="cp_videoset_id" property="cpVideosetId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="videoset_type" property="videosetType" jdbcType="INTEGER" />
+		<result column="is_effective" property="isEffective" jdbcType="INTEGER" />
+		<result column="videoset_total" property="videosetTotal" jdbcType="INTEGER" />
+		<result column="years" property="years" jdbcType="VARCHAR" />
+		<result column="time_length" property="timeLength" jdbcType="BIGINT" />
+		<result column="is_suetime" property="isSuetime" jdbcType="VARCHAR" />
+		<result column="director" property="director" jdbcType="VARCHAR" />
+		<result column="actors" property="actors" jdbcType="VARCHAR" />
+		<result column="tag" property="tag" jdbcType="VARCHAR" />
+		<result column="tag_search" property="tagSearch" jdbcType="VARCHAR" />
+		<result column="py_name" property="pyName" jdbcType="VARCHAR" />
+		<result column="seq" property="seq" jdbcType="INTEGER" />
+		<result column="column_id" property="columnId" jdbcType="BIGINT" />
+		<result column="twodim_code" property="twoDimCode" jdbcType="VARCHAR" />
+		
+		<result column="score" property="score" jdbcType="VARCHAR" />
+		<result column="play_count" property="playCount" jdbcType="INTEGER" />
+		<result column="is3D" property="is3D" jdbcType="INTEGER" />
+		<result column="isSeries" property="isSeries" jdbcType="INTEGER" />
+		<result column="videoset_update" property="videosetUpdate" jdbcType="INTEGER" />
+		
+		<result column="videoset_tv_img" property="videosetTvImg" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getVideoSetByPage" parameterType="map" resultMap="videosetMap">
+		SELECT vs.seq,vs.videoset_id,vs.time_length AS timeLength,vs.videoset_name,vs.videoset_focus,vs.videoset_brief,vs.videoset_type,vs.videoset_total,vs.videoset_img,vs.keyword,vs.is_suetime,vs.director,vs.actors,vs.tag,vs.create_time,vs.update_time,vs.is_effective,vs.cp_videoset_id,vs.py_name,vs.years,vs.cp,vs.column_id,vs.twodim_code,vs.score,vs.is3D,vs.isSeries,vs.videoset_update,vs.videoset_tv_img FROM video_set  vs
+		<where>
+			<if test="videoSet.videosetName!=null">
+			  and videoset_name like CONCAT('%',#{videoSet.videosetName,jdbcType=VARCHAR},'%')
+			</if>	
+			<if test="videoSet.videosetType!=null">
+			  and vs.videoset_type =#{videoSet.videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="videoSet.isEffective!=null">
+			  and is_effective =#{videoSet.isEffective,jdbcType=INTEGER}
+			</if>
+			</where>
+		ORDER BY seq ASC,create_time DESC LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	
+	
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM video_set
+		<where>
+			<if test="videoSet.videosetName!=null">
+				and videoset_name like CONCAT('%',#{videoSet.videosetName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="videoSet.videosetType">
+				and videoset_type =  #{videoSet.videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="videoSet.isEffective!=null">
+				and is_effective =  #{videoSet.isEffective,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 用于猜你喜欢列表查询 -->
+	<select id="getVideosetRelateByPage" parameterType="map" resultMap="videosetMap">
+		SELECT * FROM video_set
+		<where>
+			<if test="videoSet.videosetId!=null">
+			  and videoset_id not in (#{videoSet.videosetId})
+			</if>
+			<if test="videoSet.videosetName!=null">
+			  and videoset_name like CONCAT('%',#{videoSet.videosetName,jdbcType=VARCHAR},'%')
+			</if>	
+			<if test="videoSet.videosetType!=null">
+			  and videoset_type =#{videoSet.videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="videoSet.isEffective!=null">
+			  and is_effective =#{videoSet.isEffective,jdbcType=INTEGER}
+			</if>
+			
+			</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getVideosetRelateCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM video_set 
+		<where>
+			<if test="videoSet.videosetId!=null">
+			  and videoset_id not in (#{videoSet.videosetId})
+			</if>
+			<if test="videoSet.videosetName!=null">
+				and videoset_name like CONCAT('%',#{videoSet.videosetName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="videoSet.videosetType">
+				and videoset_type =  #{videoSet.videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="videoSet.isEffective!=null">
+				and is_effective =  #{videoSet.isEffective,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	
+
+
+	<select id="getVideoSetById" parameterType="long" resultMap="videosetMap">
+		select * from video_set where videoset_id=#{videosetId}
+	</select>
+
+	<update id="updateVideoSet" parameterType="VideoSet">
+		UPDATE video_set
+		<set>
+			<if test="videosetName!=null">
+				videoset_name = #{videosetName,jdbcType=VARCHAR},
+			</if>
+			<if test="timeLength!=null">
+				time_length = #{timeLength,jdbcType=VARCHAR},
+			</if>
+			<if test="videosetFocus!=null">
+				videoset_focus = #{videosetFocus,jdbcType=VARCHAR},
+			</if>
+			<if test="videosetBrief!=null">
+				videoset_brief = #{videosetBrief,jdbcType=VARCHAR},
+			</if>
+			<if test="videosetType!=null">
+				videoset_type = #{videosetType,jdbcType=INTEGER},
+			</if>
+			<if test="videosetTotal!=null">
+				videoset_total = #{videosetTotal,jdbcType=INTEGER},
+			</if>
+			<if test="videosetImg!=null">
+				videoset_img = #{videosetImg,jdbcType=VARCHAR},
+			</if>
+			<if test="keyWord!=null">
+				keyword = #{keyWord,jdbcType=VARCHAR},
+			</if>
+			<if test="years!=null">
+				years = #{years,jdbcType=VARCHAR},
+			</if>
+			<if test="isSuetime!=null">
+				is_suetime = #{isSuetime,jdbcType=VARCHAR},
+			</if>
+			<if test="director!=null">
+				director = #{director,jdbcType=VARCHAR},
+			</if>
+			<if test="actors!=null">
+				actors = #{actors,jdbcType=VARCHAR},
+			</if>
+			<if test="tag!=null">
+				tag = #{tag,jdbcType=VARCHAR},
+			</if>
+			<if test="tagSearch!=null">
+				tag_search = #{tagSearch,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime!=null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isEffective!=null">
+				is_effective = #{isEffective,jdbcType=INTEGER},
+			</if>
+			<if test="cpVideosetId!=null">
+				cp_videoset_id = #{cpVideosetId,jdbcType=VARCHAR},
+			</if>
+			<if test="seq!=null">
+				seq = #{seq,jdbcType=INTEGER},
+			</if>
+			<if test="twoDimCode!=null">
+				twodim_code = #{twoDimCode,jdbcType=VARCHAR},
+			</if>
+			<if test="pyName!=null">
+				py_name = #{pyName,jdbcType=VARCHAR},
+			</if>
+			
+			<if test="score!=null">
+				score = #{score,jdbcType=VARCHAR},
+			</if>
+			<if test="playCount!=null">
+				play_count = #{playCount,jdbcType=VARCHAR},
+			</if>
+			<if test="is3D!=null">
+				is3D = #{is3D,jdbcType=VARCHAR},
+			</if>
+			<if test="isSeries!=null">
+				isSeries = #{isSeries,jdbcType=VARCHAR},
+			</if>
+			<if test="videosetTvImg!=null">
+				videoset_tv_img= #{videosetTvImg,jdbcType=VARCHAR},
+			</if>
+			<if test="videosetUpdate!=null">
+				videoset_update = #{videosetUpdate,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE videoset_id = #{videosetId,jdbcType=BIGINT}
+	</update>
+	
+	<update id="updateVideosetDatarate" parameterType="map">
+		UPDATE video_set SET data_rate = #{dataRate} WHERE videoset_id=#{videosetId}
+	</update>
+
+	<insert id="addVideoSet" parameterType="VideoSet">
+		INSERT INTO video_set
+		(videoset_name,videoset_focus,videoset_brief,videoset_type,videoset_total,videoset_img,keyword,years,is_suetime,director,actors,tag_search,create_time,update_time,is_effective,cp_videoset_id,py_name,seq,twodim_code,time_length,score,play_count,is3D,isSeries,videoset_update,videoset_tv_img)
+		VALUES
+		(#{videosetName},#{videosetFocus},#{videosetBrief},#{videosetType},#{videosetTotal},#{videosetImg},#{keyWord},#{years},#{isSuetime},#{director},#{actors},#{tagSearch},NOW(),NOW(),1,#{cpVideosetId},#{pyName},#{seq},#{twoDimCode},#{timeLength},#{score},#{playCount},#{is3D},#{isSeries},#{videosetUpdate},#{videosetTvImg})
+	</insert>
+
+
+	<delete id="deleteVideoSet" parameterType="map">
+		UPDATE video_set SET is_effective = #{isEffective}  WHERE videoset_id=#{videosetId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 上移 下移 置顶 -->
+	<update id="upVideoSetSequence" parameterType="map">
+	<![CDATA[
+		UPDATE video_set SET seq=seq+1 WHERE seq>=#{start,jdbcType=INTEGER} AND seq<=#{end,jdbcType=INTEGER}
+	]]>
+	</update>
+	<update id="downVideoSetSequence" parameterType="map">
+	<![CDATA[
+		UPDATE video_set SET seq=seq-1 WHERE seq>#{start,jdbcType=INTEGER} AND seq<=#{end,jdbcType=INTEGER}
+	]]>
+	</update>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="VideoSetClassMapper">
+	<resultMap id="videoSetClassMap" type="com.hiveview.entity.video.VideoSetClass">
+		<id column="sequence" property="sequence" jdbcType="TINYINT" />
+		<id column="thirdclass_id" property="thirdclassId" jdbcType="BIGINT"/>
+		<id column="videoset_id" property="videosetId" jdbcType="BIGINT"/>
+		<result column="firstclass_id" property="firstclassId" jdbcType="BIGINT" />
+		<result column="secondclass_id" property="secondclassId" jdbcType="BIGINT"/>
+		<result column="videoset_type" property="videosetType" jdbcType="TINYINT"/>
+		<result column="thirdclass_name" property="thirdclassName" jdbcType="VARCHAR"/>
+		<result column="videoset_name" property="videosetName" jdbcType="VARCHAR"/>		
+	</resultMap>
+	
+	<select id="getClassByPage"  parameterType="map" resultMap="videoSetClassMap" >
+		select vc.*,ct.thirdclass_name,vs.videoset_name  from  videoset_class  as  vc,class_third   as  ct,video_set  as  vs where  vc.thirdclass_id=ct.thirdclass_id  and vs.videoset_id=vc.videoset_id
+		<if test="videoSetClass.videosetName!=null">
+			and vs.videoset_name like concat('%',#{videoSetClass.videosetName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="videoSetClass.videosetId!=null">
+			and vc.videoset_id = #{videoSetClass.videosetId,jdbcType=BIGINT}
+		</if>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getClassCountByPage" parameterType="map"  resultType="int">
+		select count(*)  from  videoset_class  as  vc,class_third   as  ct,video_set  as  vs where  vc.thirdclass_id=ct.thirdclass_id  and vs.videoset_id=vc.videoset_id
+		<if test="videoSetClass.videosetName!=null">
+			and vs.videoset_name like concat('%',#{videoSetClass.videosetName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="videoSetClass.videosetId!=null">
+			and vc.videoset_id = #{videoSetClass.videosetId,jdbcType=BIGINT}
+		</if>
+	</select>
+	
+	<insert id="addVideoSetClass" parameterType="VideoSetClass">
+		insert into videoset_class(sequence,thirdclass_id,videoset_id,firstclass_id,secondclass_id,videoset_type)
+		values(#{sequence,jdbcType=TINYINT},#{thirdclassId,jdbcType=BIGINT},#{videosetId,jdbcType=BIGINT},#{firstclassId,jdbcType=BIGINT},#{secondclassId,jdbcType=BIGINT},#{videosetType,jdbcType=TINYINT})
+	</insert>
+	
+	
+	<delete id="delVideosetClass" parameterType="map">
+		delete from  videoset_class 
+		<where>
+			<if test="videoSetClass!=null">
+				<if test="videoSetClass.sequence!=null">
+					and sequence=#{videoSetClass.sequence,jdbcType=INTEGER}
+				</if>
+				<if test="videoSetClass.thirdclassId!=null">
+					and thirdclass_id=#{videoSetClass.thirdclassId}
+				</if>
+				<if test="videoSetClass.videosetId!=null">
+					and videoset_id=#{videoSetClass.videosetId}
+				</if>
+			</if>
+		</where>
+	</delete>
+
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.recommend.SubjectDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		subject_id AS subjectId,seq AS seq,subject_name AS subjectName,
+		subject_pic AS subjectPic,subject_desc AS subjectDesc,
+		subject_bg_img AS subjectBgImg,is_effective AS isEffective,
+		img_size AS imgSize
+	    ]]>
+	</sql>
+	<sql id="table_alias">
+		subject
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	
+		<if test="subject!=null">     				
+	       <if test="subject.subjectId != null">
+				AND subject_id = #{subject.subjectId}
+			</if>
+	       <if test="subject.seq != null">
+				AND seq = #{subject.seq}
+			</if>
+	       <if test="subject.subjectName != null and subject.subjectName!='' ">
+				AND subject_name like CONCAT('%', #{subject.subjectName},'%') 
+			</if>
+	       <if test="subject.subjectPic != null">
+				AND subject_pic = #{subject.subjectPic}
+			</if>
+	       <if test="subject.subjectDesc != null and subject.subjectDesc!='' ">
+				AND subject_desc like CONCAT('%', #{subject.subjectDesc},'%')
+			</if>
+	       <if test="subject.subjectBgImg != null">
+				AND subject_bg_img = #{subject.subjectBgImg}
+			</if>
+	       <if test="subject.isEffective != null">
+				AND is_effective = #{subject.isEffective}
+			</if>
+	       <if test="subject.imgSize != null">
+				AND img_size = #{subject.imgSize}
+			</if>
+		</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.recommend.Subject">
+        INSERT INTO <include refid="table_alias"/> (
+        	seq ,
+        	subject_name ,
+        	subject_pic ,
+        	subject_desc ,
+        	subject_bg_img ,
+        	created_time ,
+        	updated_time ,
+        	is_effective ,
+        	img_size
+        ) VALUES (
+        	#{seq} ,
+        	#{subjectName} ,
+        	#{subjectPic} ,
+        	#{subjectDesc} ,
+        	#{subjectBgImg} ,
+        	NOW() ,
+        	NOW() ,
+        	#{isEffective} ,
+        	#{imgSize}
+        )
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.recommend.Subject">
+        UPDATE <include refid="table_alias"/> SET
+	        seq = #{seq} ,
+	        subject_name = #{subjectName} ,
+	        subject_pic = #{subjectPic} ,
+	        subject_desc = #{subjectDesc} ,
+	        subject_bg_img = #{subjectBgImg} ,
+	        updated_time = NOW() ,
+	        is_effective = #{isEffective} ,
+	        img_size = #{imgSize}
+        WHERE 
+	        subject_id = #{subjectId} 
+	</update>
+
+    <delete id="delete">
+        DELETE FROM <include refid="table_alias"/> WHERE
+        subject_id = #{subjectId} 
+    </delete>
+    
+    <select id="getById" resultType="com.hiveview.entity.recommend.Subject">
+		SELECT <include refid="selectColumns" />
+		    FROM <include refid="table_alias"/> 
+	    <![CDATA[
+	        WHERE 
+		        subject_id = #{subjectId} 
+	    ]]>
+	</select>
+	
+    <select id="getCount" resultType="Integer">
+        SELECT count(*) FROM <include refid="table_alias"/> 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.recommend.Subject">
+    	SELECT <include refid="selectColumns" />
+	    FROM <include refid="table_alias"/> 
+		<include refid="findPageWhere"/>
+		ORDER BY isEffective DESC,seq
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

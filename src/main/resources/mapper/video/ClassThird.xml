@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ClassThirdMapper">
+	<resultMap id="classThirdMap" type="com.hiveview.entity.video.tag.ClassThird">
+		<id column="thirdclass_id" property="thirdclassId" jdbcType="BIGINT" />
+		<id column="firstclass_id" property="firstclassId" jdbcType="BIGINT" />
+		<id column="secondclass_id" property="secondclassId" jdbcType="BIGINT" />
+		<result column="thirdclass_name" property="thirdclassName" jdbcType="VARCHAR" />
+		<result column="sequence" property="sequence" jdbcType="INTEGER" />
+		<result column="is_effective"  property="isEffective" jdbcType="TINYINT"/>
+	</resultMap>
+
+	<select id="getClassThirdByPage" parameterType="map" resultMap="classThirdMap">
+		SELECT * FROM class_third
+		<where>
+		<if test="classThird!=null">
+			<if test="classThird.thirdclassName!=null">
+				and  thirdclass_name   like CONCAT('%',#{classThird.thirdclassName,jdbcType=VARCHAR},'%') 
+			</if>
+			<if test="classThird.secondclassId!=null" >
+				and secondclass_id=#{classThird.secondclassId}
+			</if>
+			<if test="classThird.firstclassId!=null" >
+				and firstclass_id=#{classThird.firstclassId}
+			</if>
+			<if test="classThird.isEffective!=null">
+				and is_effective = #{classThird.isEffective,jdbcType=INTEGER}
+			</if>
+		</if>
+		</where>
+		ORDER BY sequence ASC
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	<select id="getCountByPage" parameterType="map" resultType="int">
+		SELECT count(*) FROM class_third
+		<where>
+		<if test="classThird!=null">
+			<if test="classThird.thirdclassName!=null">
+				and  thirdclass_name   like CONCAT('%',#{classThird.thirdclassName,jdbcType=VARCHAR},'%') 
+			</if>
+			<if test="classThird.secondclassId!=null" >
+				and  secondclass_id=#{classThird.secondclassId}
+			</if>
+			<if test="classThird.firstclassId!=null" >
+				and  firstclass_id=#{classThird.firstclassId}
+			</if>
+			<if test="classThird.isEffective!=null">
+				and is_effective = #{classThird.isEffective,jdbcType=INTEGER}
+			</if>
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="getClassThirdByFirstId" parameterType="map" resultMap="classThirdMap">
+		SELECT * FROM class_third where firstclass_id=#{firstclassId}
+	</select>
+	
+	<select id="getClassThirdBySecondId" parameterType="map" resultMap="classThirdMap">
+		SELECT * FROM class_third where secondclass_id=#{secondclassId}
+	</select>
+
+	<select id="getClassThirdById" parameterType="ClassThirdKey" resultMap="classThirdMap">
+		select * from class_third where secondclass_id=#{secondclassId} and firstclass_id=#{firstclassId} and thirdclass_id=#{thirdclassId}
+	</select>
+
+
+	<update id="updateClassThird" parameterType="ClassThird">
+		UPDATE class_third  set  sequence = #{sequence,jdbcType=INTEGER},thirdclass_name = #{thirdclassName,jdbcType=VARCHAR},is_effective=#{isEffective,jdbcType=INTEGER}
+		where thirdclass_id=#{thirdclassId} 
+	</update>
+
+	<insert id="addClassThird" parameterType="ClassThird" >
+		INSERT INTO class_third
+		(sequence,thirdclass_name,firstclass_id,secondclass_id,is_effective)
+		VALUES
+		(#{sequence},#{thirdclassName},#{firstclassId},#{secondclassId},#{isEffective})
+	</insert>
+
+	<delete id="deleteClassThird" parameterType="Long">
+			DELETE FROM class_third WHERE thirdclass_id=#{thirdclassId}
+		 <!-- 逻辑上删除三级标签 -->
+<!-- 		 update class_third set is_effective = -1 where thirdclass_id=#{thirdclassId} -->
+		
+	</delete>
+
+
+
+	<!-- 根据三级标签ID查询一级、二级标签 -->
+	<select id="getClassByThirdId"  parameterType="Long"  resultType="ClassThird">
+		select *  from class_third  where thirdclass_id=#{thirdclassId,jdbcType=INTEGER}
+	</select>
+</mapper>

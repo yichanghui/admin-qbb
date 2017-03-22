@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hiveview.dao.log.UserActDao">
+	<resultMap id="userActMap" type="com.hiveview.entity.log.UserAct">
+		<id column="id" property="Id" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="action"  property="action" jdbcType="VARCHAR"/>
+		<result column="operation"  property="operation" jdbcType="VARCHAR"/>
+		<result column="info"  property="info" jdbcType="VARCHAR"/>
+		<result column="create_time"  property="createTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+
+	<insert id="save" parameterType="com.hiveview.entity.log.UserAct">
+		INSERT INTO user_act
+		(user_name,action,operation,info,create_time,detail_info)
+		VALUES
+		(#{userName},#{action},#{operation},#{info},NOW(),#{detailInfo})
+	</insert>
+	<select id="getList" parameterType="com.hiveview.entity.log.UserAct" resultMap="userActMap">
+		SELECT id,user_name,action,operation,info,create_time
+		FROM user_act
+		<where>
+			<if test="userName!=null">
+				AND user_name = #{userName}
+			</if>
+			<if test="action!=null">
+				AND action = #{action}
+			</if>
+			<if test="operation!=null">
+				AND operation = #{operation}
+			</if>
+		</where>
+		ORDER BY create_time DESC LIMIT #{pageIndex},#{pageSize}
+	</select>
+	
+	<select id="getCount" parameterType="com.hiveview.entity.log.UserAct" resultType="int">
+		SELECT COUNT(1) FROM user_act
+		<where>
+			<if test="userName!=null">
+				AND user_name = #{userName}
+			</if>
+			<if test="action!=null">
+				AND action = #{action}
+			</if>
+			<if test="operation!=null">
+				AND operation = #{operation}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="HuanMapper">
+	<resultMap id="classFirstMap" type="com.hiveview.entity.video.tag.ClassFirst">
+		<id column="firstclass_id" property="firstclassId" jdbcType="BIGINT" />
+		<result column="firstclass_name" property="firstclassName" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="contentMediaMap" type="com.hiveview.entity.po.huanwang.ContentMedia">
+		<id column="videoset_id" property="mediaId" jdbcType="INTEGER" />
+		<result column="videoset_type" property="model" jdbcType="VARCHAR" />
+		<result column="videoset_name" property="title" jdbcType="VARCHAR" />
+		<result column="director" property="director" jdbcType="VARCHAR" />
+		<result column="actors" property="starring" jdbcType="VARCHAR" />
+		<result column="is_suetime" property="released" jdbcType="VARCHAR" />
+		<result column="videoset_total" property="videosetTotal" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="contentVideoMap" type="com.hiveview.entity.po.huanwang.ContentVideo">
+		<id column="video_id" property="videoId" jdbcType="INTEGER" />
+		<result column="videoset_id" property="mediaId" jdbcType="INTEGER" />
+		<result column="video_type" property="episode" jdbcType="VARCHAR" />
+		<result column="video_name" property="title" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAllClassFirst" parameterType="map" resultMap="classFirstMap">
+		SELECT firstclass_id,firstclass_name FROM class_first
+	</select>
+	
+	<select id="getAllMediaByPage" parameterType="map" resultMap="contentMediaMap">
+		SELECT videoset_id,videoset_type,videoset_name,director,actors,is_suetime FROM video_set
+		<where>
+			<if test="videosetType!=null">
+				AND videoset_type = #{videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="isEffective!=null">
+				AND is_effective = #{isEffective,jdbcType=INTEGER}
+			</if>
+		</where>
+		LIMIT #{currentPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+
+	<select id="getAllVideoByPage" parameterType="map" resultMap="contentVideoMap">
+		SELECT video_id,videoset_id,video_type,video_name FROM video
+		<where>
+			videoset_id = #{videosetId,jdbcType=INTEGER}
+			<if test="isEffective!=null">
+				AND is_effective = #{isEffective,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMediaCount" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM video_set
+		<where>
+			<if test="videosetType!=null">
+				AND videoset_type = #{videosetType,jdbcType=INTEGER}
+			</if>
+			<if test="isEffective!=null">
+				AND is_effective = #{isEffective,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

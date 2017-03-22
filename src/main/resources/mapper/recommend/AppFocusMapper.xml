@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.recommend.AppFocusDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		t1.id AS id,t1.position AS position,t1.navigation_id AS navigationId,t1.seq AS seq,t1.content_type AS contentType,t1.content_id AS contentId,t1.content_desc AS contentDesc,t1.focus_large_img AS focusLargeImg,t1.focus_thumb_img AS focusThumbImg,t1.content_name AS contentName,t1.interval_time AS intervalTime,t1.is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>
+		    <if test="navigationId != null">
+				AND t1.navigation_id = #{navigationId}
+			</if>
+		    <if test="contentType != null">
+				AND t1.content_type = #{contentType}
+			</if>
+		    <if test="contentName != null">
+				AND t1.content_name LIKE CONCAT('%',#{contentName},'%')
+			</if>
+		</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.recommend.AppFocus">
+    <![CDATA[
+        INSERT INTO app_focus (
+        	id ,
+        	position ,
+        	navigation_id ,
+        	seq ,
+        	content_type ,
+        	content_id ,
+        	content_desc ,
+        	focus_large_img ,
+        	focus_thumb_img ,
+        	content_name ,
+        	interval_time ,
+        	created_time ,
+        	updated_time ,
+        	is_effective 
+        ) VALUES (
+        	#{id} ,
+        	#{position} ,
+        	#{navigationId} ,
+        	#{seq} ,
+        	#{contentType} ,
+        	#{contentId} ,
+        	#{contentDesc} ,
+        	#{focusLargeImg} ,
+        	#{focusThumbImg} ,
+        	#{contentName} ,
+        	#{intervalTime} ,
+        	#{createdTime} ,
+        	#{updatedTime} ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.recommend.AppFocus">
+    <![CDATA[
+        UPDATE app_focus SET
+	        position = #{position} ,
+	        navigation_id = #{navigationId} ,
+	        seq = #{seq} ,
+	        content_type = #{contentType} ,
+	        content_id = #{contentId} ,
+	        content_desc = #{contentDesc} ,
+	        focus_large_img = #{focusLargeImg} ,
+	        focus_thumb_img = #{focusThumbImg} ,
+	        content_name = #{contentName} ,
+	        interval_time = #{intervalTime} ,
+	        updated_time = #{updatedTime} ,
+	        is_effective = #{isEffective} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM app_focus WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.recommend.AppFocus">
+		SELECT id
+		    FROM app_focus WHERE content_id=#{contentId}
+		    <if test="navigationId != null">
+				AND navigation_id = #{navigationId}
+			</if>
+	</select>
+	
+    <select id="count" resultType="Integer">
+        SELECT count(1) FROM app_focus t1
+		<include refid="findPageWhere"/>
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.recommend.AppFocus">
+    	SELECT <include refid="selectColumns" />
+	    FROM app_focus t1
+		<include refid="findPageWhere"/>
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+

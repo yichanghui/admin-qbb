@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiveview.dao.app.app.SearchAppDao">
+
+	<sql id="selectColumns">
+	    <![CDATA[
+		t1.id AS id,t1.sequence AS sequence,t1.app_id AS appId,t1.bundle_id AS bundleId,t1.app_type AS appType,t1.app_icon AS appIcon,t1.app_name AS appName,t1.is_effective AS isEffective
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+			<where> t2.category_id = #{categoryId}
+		       <if test="appType != null">
+					AND t1.app_type = #{appType}
+				</if>
+		       <if test="appName != null">
+					AND t1.app_name = #{appName}
+				</if>
+		       <if test="isEffective != null">
+					AND t1.is_effective = #{isEffective}
+				</if>
+			</where>
+	</sql>
+
+	<insert id="save" parameterType="com.hiveview.entity.app.app.SearchApp">
+    <![CDATA[
+        INSERT INTO search_app (
+        	sequence ,
+        	app_id ,
+        	bundle_id ,
+        	app_type ,
+        	app_icon ,
+        	app_name ,
+        	update_time ,
+        	is_effective 
+        ) VALUES (
+        	#{sequence} ,
+        	#{appId} ,
+        	#{bundleId} ,
+        	#{appType} ,
+        	#{appIcon} ,
+        	#{appName} ,
+        	#{updateTime} ,
+        	#{isEffective} 
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" parameterType="com.hiveview.entity.app.app.SearchApp">
+    <![CDATA[
+        UPDATE search_app SET
+	        bundle_id = #{bundleId} ,
+	        app_type = #{appType} ,
+	        app_icon = #{appIcon} ,
+	        app_name = #{appName} ,
+	        update_time = #{updateTime} ,
+	        is_effective = #{isEffective},
+	        sequence = #{sequence},
+	        app_id = #{appId} 
+        WHERE 
+	        id=#{id}
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM search_app WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultType="com.hiveview.entity.app.app.SearchApp">
+		SELECT id
+	    <![CDATA[
+		    FROM search_app WHERE app_id=#{appId} 
+	    ]]>
+	</select>
+	
+    <select id="count" resultType="Integer">
+        SELECT count(1) FROM search_app t1 LEFT JOIN app_tag_relate t2 ON t1.app_id=t2.app_id 
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="getList" resultType="com.hiveview.entity.app.app.SearchApp">
+    	SELECT <include refid="selectColumns" />
+	    FROM search_app t1 LEFT JOIN app_tag_relate t2 ON t1.app_id=t2.app_id
+		<include refid="findPageWhere"/>
+		ORDER BY t1.sequence
+		LIMIT #{pageIndex},#{pageSize}
+    </select>
+</mapper>
+
