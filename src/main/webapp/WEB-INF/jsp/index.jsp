@@ -14,10 +14,6 @@
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
 	<link rel="Bookmark" href="/favicon.ico" >
 	<link rel="Shortcut Icon" href="/favicon.ico" />
-	<!--[if lt IE 9]>
-	<script type="text/javascript" src="lib/html5shiv.js"></script>
-	<script type="text/javascript" src="lib/respond.min.js"></script>
-	<![endif]-->
 	<jsp:include page="common/static.jsp"></jsp:include>
 	<!--[if IE 6]>
 	<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
