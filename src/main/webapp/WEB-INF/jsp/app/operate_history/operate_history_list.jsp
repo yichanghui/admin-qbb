@@ -60,7 +60,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </tr>
 <tr>
 <td class="tableTdRight">开发商：</td>
-<td class="tableTdLeft"><select id="developerId"><option value="1">家视天下</option></select></td>
+<td class="tableTdLeft"><select id="developerId"><option value="1">中讯担保</option></select></td>
 </tr>
 <tr>
 <td class="tableTdRight">顺序：</td>

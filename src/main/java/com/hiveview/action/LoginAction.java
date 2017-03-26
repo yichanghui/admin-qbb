@@ -75,5 +75,9 @@ public class LoginAction {
 		request.getSession().invalidate();
 		return "login";
 	}
+	@RequestMapping(value = "/index2")
+	public String index2(HttpServletRequest request) {
+		return "index2";
+	}
 
 }

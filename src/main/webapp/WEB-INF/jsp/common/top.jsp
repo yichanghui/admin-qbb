@@ -17,7 +17,7 @@ background-image: url("images/project/background_top.png");
 .topCss a{color:#FFFFFF;}
 </style>
 <div data-options="region:'north',border:false" class="topCss">
-<h1 style="color:#FFFFFF;margin:0px;padding:5px;font-size:24;">中讯担保</h1>
+<h1 style="color:#FFFFFF;margin:0px;padding:5px;font-size:24px;">中讯担保</h1>
 <a style="position: absolute;bottom: 5px;right: 45px;" href="javascript:void(0);" id="update_password_for_private_person">修改密码</a>
 <a style="position: absolute;bottom: 5px;right: 15px;" href="logout.html">退出</a>
 </div>
