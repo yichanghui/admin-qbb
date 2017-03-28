@@ -4,7 +4,7 @@
 
 
 <mapper namespace="TagMapper">
-	<resultMap id="CategoryMap" type="com.hiveview.entity.app.Category">
+	<resultMap id="CategoryMap" type="com.hiveview.entity.app.SysCategory">
 		<id column="category_id" property="categoryId" jdbcType="INTEGER" />
 		<result column="category_name" property="categoryName" jdbcType="INTEGER" />
 		<result column="seq" property="seq" jdbcType="INTEGER" />

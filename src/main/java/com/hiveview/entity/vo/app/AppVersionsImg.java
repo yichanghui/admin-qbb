@@ -2,7 +2,7 @@ package com.hiveview.entity.vo.app;
 
 import com.hiveview.entity.bo.AjaxPage;
 
-public class AppVersionImg extends AjaxPage{
+public class AppVersionsImg extends AjaxPage{
 	
 	//columns START
 	private java.lang.Integer id;

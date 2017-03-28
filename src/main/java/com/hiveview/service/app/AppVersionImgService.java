@@ -1,14 +1,13 @@
 package com.hiveview.service.app;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.hiveview.dao.app.AppVersionImgDao;
 import com.hiveview.entity.bo.AjaxPage;
 import com.hiveview.entity.bo.ScriptPage;
-import com.hiveview.entity.vo.app.AppVersionImg;
+import com.hiveview.entity.vo.app.AppVersionsImg;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AppVersionImgService {
@@ -17,26 +16,26 @@ public class AppVersionImgService {
 	private AppVersionImgDao appVersionImgDao;
 	
 	/** 添加 **/
-	public int save(AppVersionImg appversionimg){
+	public int save(AppVersionsImg appversionimg){
 		return appVersionImgDao.save(appversionimg);
 	}
 	
 	/** 修改 **/
-	public int update(AppVersionImg appversionimg){
+	public int update(AppVersionsImg appversionimg){
 		return appVersionImgDao.update(appversionimg);
 	}
 	
 	/** 删除 **/
-	public int delete(AppVersionImg appversionimg){
+	public int delete(AppVersionsImg appversionimg){
 		return appVersionImgDao.delete(appversionimg);
 	}
 	
 	/** 获取列表 **/
-	public ScriptPage getList(AppVersionImg appversionimg,AjaxPage ajaxPage){
+	public ScriptPage getList(AppVersionsImg appversionimg, AjaxPage ajaxPage){
 		ScriptPage scriptPage = new ScriptPage();
 		appversionimg.setPageIndex(ajaxPage.getSkipNo());
 		appversionimg.setPageSize(ajaxPage.getPageSize());
-		List<AppVersionImg> rows = appVersionImgDao.getList(appversionimg);
+		List<AppVersionsImg> rows = appVersionImgDao.getList(appversionimg);
 		scriptPage.setRows(rows);
 		int total = appVersionImgDao.getCount(appversionimg);
 		scriptPage.setTotal(total);

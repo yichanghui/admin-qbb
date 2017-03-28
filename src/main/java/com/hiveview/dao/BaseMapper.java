@@ -1,16 +1,26 @@
 package com.hiveview.dao;
 
 
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-
-import org.mybatis.spring.support.SqlSessionDaoSupport;
-import org.springframework.stereotype.Repository;
 @SuppressWarnings("unchecked")
 public class BaseMapper<T> extends SqlSessionDaoSupport{
 	private Class<T> entityClass;
+
+	/**
+	 * Autowired 必须要有
+	 */
+	@Autowired
+	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory){
+
+		super.setSqlSessionFactory(sqlSessionFactory);
+	}
 	/**
 	 * 通过反射获取子类确定的泛型类
 	 */

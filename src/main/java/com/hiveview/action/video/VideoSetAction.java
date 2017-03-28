@@ -1,17 +1,5 @@
 package com.hiveview.action.video;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.hiveview.action.comm.JedisUtil;
 import com.hiveview.entity.bo.AjaxPage;
 import com.hiveview.entity.bo.Data;
 import com.hiveview.entity.bo.ScriptPage;
@@ -21,6 +9,16 @@ import com.hiveview.service.video.FilmReviewService;
 import com.hiveview.service.video.VideoService;
 import com.hiveview.service.video.VideoSetSerivce;
 import com.hiveview.util.PinyinUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/videoSet")
@@ -170,12 +168,12 @@ public class VideoSetAction{
 	@ResponseBody
 	public Data synchronousData(String videosetIds){
 		try {
-			int flag = JedisUtil.save("videosetIds", videosetIds);
-			if(flag<=0){
-				return new Data();
-			}else{
+//			int flag = JedisUtil.save("videosetIds", videosetIds);
+//			if(flag<=0){
+//				return new Data();
+//			}else{
 				return new Data(0,"加入队列失败");
-			}
+//			}
 		} catch (Exception e) {
 			return new Data(0,e.getMessage());
 		}

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hiveview.dao.app.tag.CategoryMapper;
 import com.hiveview.dao.app.tag.TagMapper;
-import com.hiveview.entity.app.Category;
+import com.hiveview.entity.app.SysCategory;
 import com.hiveview.entity.app.Tag;
 import com.hiveview.util.DateUtil;
 
@@ -61,7 +61,7 @@ public class TagService {
 	/*** tag end ***/
 	
 	/*** category start ***/
-	public List<Category> getCategoryListByPage(Category category,Integer currentPage,Integer pageSize){
+	public List<SysCategory> getCategoryListByPage(SysCategory category, Integer currentPage, Integer pageSize){
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("category", category);
 		map.put("currentPage",currentPage);
@@ -69,25 +69,25 @@ public class TagService {
 		return categoryMapper.getInfoById("TagMapper.getCategoryListByPage", map);
 	}
 	
-	public List<Category> getCategoryList(){
+	public List<SysCategory> getCategoryList(){
 		Map<String, Object> map = new HashMap<String, Object>();
 		return categoryMapper.getInfoById("TagMapper.getCategoryList", map);
 	}
-	public Integer updateCategory(Category category){
+	public Integer updateCategory(SysCategory category){
 		category.setUpdateTime(DateUtil.getTimeStamp(new Date()));
 		return categoryMapper.updateById("TagMapper.updateCategory", category);
 	}
-	public Integer saveCategory(Category category){
+	public Integer saveCategory(SysCategory category){
 		category.setCreateTime(DateUtil.getTimeStamp(new Date()));
 		return categoryMapper.saveInfo("TagMapper.saveCategory", category);
 	}
 	public Integer deleteCategory(Integer id){
-		Category category = new Category();
+		SysCategory category = new SysCategory();
 		category.setCategoryId(id);
 		category.setState(0);
 		return categoryMapper.updateById("TagMapper.deleteCategory", category);
 	}
-	public Integer getCountForCategory(Category category){
+	public Integer getCountForCategory(SysCategory category){
 		return categoryMapper.getCount("TagMapper.getCountForCategory", category);
 	}
 	/*** category end ***/

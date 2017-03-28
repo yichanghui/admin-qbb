@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.hiveview.entity.bo.AjaxPage;
 import com.hiveview.entity.bo.Data;
 import com.hiveview.entity.bo.ScriptPage;
-import com.hiveview.entity.vo.app.AppVersionImg;
+import com.hiveview.entity.vo.app.AppVersionsImg;
 import com.hiveview.service.app.AppVersionImgService;
 @Controller
 @RequestMapping("/appversionimg")
@@ -20,7 +20,7 @@ public class AppVersionImgAction{
 	/** 分页查询列表 **/
 	@RequestMapping(value="/getList")
 	@ResponseBody
-	public ScriptPage getList(AppVersionImg appversionimg,AjaxPage ajaxPage){
+	public ScriptPage getList(AppVersionsImg appversionimg, AjaxPage ajaxPage){
 		ScriptPage scriptPage = new ScriptPage();
 		try {
 			scriptPage = appVersionImgService.getList(appversionimg,ajaxPage);
@@ -32,7 +32,7 @@ public class AppVersionImgAction{
 	/** 添加信息 **/
 	@RequestMapping(value="/add")
 	@ResponseBody
-	public Data add(AppVersionImg appversionimg){
+	public Data add(AppVersionsImg appversionimg){
 		Data data = new Data();
 		int result = appVersionImgService.save(appversionimg);
 		if(result>0){
@@ -45,7 +45,7 @@ public class AppVersionImgAction{
 	/** 修改信息 **/
 	@RequestMapping(value="/update")
 	@ResponseBody
-	public Data update(AppVersionImg appversionimg){
+	public Data update(AppVersionsImg appversionimg){
 		Data data = new Data();
 		int result = appVersionImgService.update(appversionimg);
 		if(result>0){
@@ -58,7 +58,7 @@ public class AppVersionImgAction{
 	/** 删除信息 **/
 	@RequestMapping(value="/delete")
 	@ResponseBody
-	public Data delete(AppVersionImg appversionimg){
+	public Data delete(AppVersionsImg appversionimg){
 		Data data = new Data();
 		int result = appVersionImgService.delete(appversionimg);
 		if(result>0){

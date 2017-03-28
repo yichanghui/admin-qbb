@@ -2,7 +2,7 @@ package com.hiveview.entity.app;
 
 import java.sql.Timestamp;
 
-public class Category {
+public class SysCategory {
 
 	private Integer categoryId;
 	private String categoryName;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
-import com.hiveview.entity.app.Category;
+import com.hiveview.entity.app.SysCategory;
 import com.hiveview.entity.app.Tag;
 import com.hiveview.entity.bo.AjaxPage;
 import com.hiveview.entity.bo.Data;
@@ -86,7 +86,7 @@ public class TagAction{
 	
 	@RequestMapping(value="/getCategroyListByPage", produces ={"application/json;charset=UTF-8"})
 	@ResponseBody
-	public ScriptPage getCategroyListByPage(Category category,AjaxPage pageAjax){
+	public ScriptPage getCategroyListByPage(SysCategory category, AjaxPage pageAjax){
 		ScriptPage scriptPage=new ScriptPage();
 		scriptPage.setRows(tagService.getCategoryListByPage(category, pageAjax.getSkipNo(), pageAjax.getPageSize()));
 		scriptPage.setTotal(this.tagService.getCountForCategory(category));
@@ -95,7 +95,7 @@ public class TagAction{
 	
 	@RequestMapping(value="/updateCategroy", produces ={"application/json;charset=UTF-8"})
 	@ResponseBody
-	public Data updateCategroy(Category category){
+	public Data updateCategroy(SysCategory category){
 		if(tagService.updateCategory(category)>0){
 			return new Data();
 		}else{
@@ -105,7 +105,7 @@ public class TagAction{
 	
 	@RequestMapping(value="/saveCategory", produces ={"application/json;charset=UTF-8"})
 	@ResponseBody
-	public Data saveCategory(Category category){
+	public Data saveCategory(SysCategory category){
 		if(tagService.saveCategory(category)>0){
 			return new Data();
 		}else{

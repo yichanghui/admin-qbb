@@ -1,16 +1,5 @@
 package com.hiveview.action.video;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.hiveview.action.comm.JedisUtil;
 import com.hiveview.entity.bo.AjaxPage;
 import com.hiveview.entity.bo.Data;
 import com.hiveview.entity.bo.ScriptPage;
@@ -18,6 +7,15 @@ import com.hiveview.entity.video.Video;
 import com.hiveview.entity.video.VideoSet;
 import com.hiveview.service.video.VideoService;
 import com.hiveview.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/video")
@@ -177,11 +175,11 @@ public class VideoAction{
 	@RequestMapping(value="/synchronousData", produces ={"application/json;charset=UTF-8"})
 	@ResponseBody
 	public Data synchronousData(String videoIds){
-		if(JedisUtil.save("videoIds", videoIds)<=0){
-			return new Data(0,"no synchronous data");
-		}else{
+//		if(JedisUtil.save("videoIds", videoIds)<=0){
+//			return new Data(0,"no synchronous data");
+//		}else{
 			return new Data();
-		}
+//		}
 	}
 	
 	@RequestMapping(value="/changeStateForVideo", produces ={"application/json;charset=UTF-8"})
