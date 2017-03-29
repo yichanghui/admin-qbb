@@ -6,9 +6,9 @@ import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
 import com.hiveview.entity.ApprovalRecord;
 import com.hiveview.entity.Paging;
-import com.hiveview.entity.Product;
+import com.hiveview.entity.Need;
 import com.hiveview.service.IApprovalRecordService;
-import com.hiveview.service.IProductService;
+import com.hiveview.service.INeedService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,19 +24,18 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/product")
-public class ProductAction extends BaseController {
+@RequestMapping("/need")
+public class NeedAction extends BaseController {
 
     @Autowired
-    private IProductService productService;
+    private INeedService needService;
     @Autowired
     private IApprovalRecordService approvalRecordService;
 
 
-
     @RequestMapping(value="/list")
     public String list() {
-        return "product/product_list";
+        return "need/need_list";
     }
 
     /**
@@ -47,25 +46,25 @@ public class ProductAction extends BaseController {
      */
     @RequestMapping(value="/toApproval/{id}")
     public ModelAndView toApproval(@PathVariable("id") long id,ModelAndView mav) {
-        Product product = productService.getProductById(id);
-        mav.getModel().put("product", product);
-        mav.setViewName("product/approval");
+        Need need = needService.getNeedById(id);
+        mav.getModel().put("need", need);
+        mav.setViewName("need/approval");
         return mav;
     }
     @RequestMapping(value="/page")
     public ModelAndView page(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
-        Product product = new Product();
+        Need need = new Need();
         String status = request.getParameter("status");
         if (StringUtil.isNotEmpty(status)) {
-                product.setStatus(Integer.parseInt(status));
+                need.setStatus(Integer.parseInt(status));
         }
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-        List<Product> products =  productService.getProductPage(product);
+        List<Need> needs =  needService.getNeedPage(need);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
-        mav.getModel().put("products",products);
-        mav.setViewName("product/paging");
+        mav.getModel().put("needs",needs);
+        mav.setViewName("need/paging");
         return mav;
     }
 
@@ -81,7 +80,7 @@ public class ProductAction extends BaseController {
         String relateId = request.getParameter("relateId");
         if (StringUtils.isNotEmpty(relateId)) {
             ApprovalRecord approvalRecord = new ApprovalRecord();
-            approvalRecord.setType(IssueType.PRODUCT.getVal());
+            approvalRecord.setType(IssueType.NEED.getVal());
             approvalRecord.setRelateId(Long.parseLong(relateId));
             Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
             List<ApprovalRecord> approvalRecords =  approvalRecordService.getApprovalList(approvalRecord);
@@ -89,7 +88,7 @@ public class ProductAction extends BaseController {
             mav.getModel().put("paging",paging);
             mav.getModel().put("approvalRecords",approvalRecords);
         }
-        mav.setViewName("product/approvalPage");
+        mav.setViewName("need/approvalPage");
         return mav;
     }
 
@@ -107,13 +106,13 @@ public class ProductAction extends BaseController {
         if (approvalRecord.getRelateId() != null  && status != null && status >0) {
             try {
                 approvalRecord.setAddTime(new Date());
-                approvalRecord.setType(IssueType.PRODUCT.getVal());
+                approvalRecord.setType(IssueType.NEED.getVal());
                 approvalRecord.setOperationId(super.getSysUserId(request));
                 approvalRecordService.saveApproval(approvalRecord);
-                Product product = new Product();
-                product.setId(approvalRecord.getRelateId());
-                product.setStatus(status);
-                productService.updateProduct(product);
+                Need need = new Need();
+                need.setId(approvalRecord.getRelateId());
+                need.setStatus(status);
+                needService.updateNeed(need);
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -123,12 +122,12 @@ public class ProductAction extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value="/operation")
-    public Boolean operation(Product product) {
+    public Boolean operation(Need need) {
         Boolean flag = false;
-        if (product.getId() != null) {
+        if (need.getId() != null) {
             try {
-                product.setUpdateTime(new Date());
-                productService.updateProduct(product);
+                need.setUpdateTime(new Date());
+                needService.updateNeed(need);
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -145,9 +144,9 @@ public class ProductAction extends BaseController {
      */
     @RequestMapping(value="/toSetting/{id}")
     public ModelAndView toSetting(@PathVariable("id") long id,ModelAndView mav) {
-        Product product = productService.getProductById(id);
-        mav.getModel().put("product", product);
-        mav.setViewName("product/setting");
+        Need need = needService.getNeedById(id);
+        mav.getModel().put("need", need);
+        mav.setViewName("need/setting");
         return mav;
     }
 

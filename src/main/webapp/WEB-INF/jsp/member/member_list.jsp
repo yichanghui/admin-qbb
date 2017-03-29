@@ -13,15 +13,15 @@
 	<![endif]-->
 	<jsp:include page="../common/static.jsp"></jsp:include>
 	<![endif]-->
-	<title>产品管理</title>
+	<title>顾问管理</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 产品列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 顾问管理 <span class="c-gray en">&gt;</span> 顾问列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div class="text-c">
 		<form class="layui-form" action="" id="needForm">
 		<div class="layui-form-item">
-			<label class="layui-form-label">产品状态</label>
+			<label class="layui-form-label">顾问状态</label>
 			<div class="layui-input-inline">
 				<select  lay-filter="statusSearch" id="statusSearch">
 					<option value="-1">全部</option>
@@ -29,8 +29,6 @@
 					<option value="3" >审核中</option>
 					<option value="4" >审核成功</option>
 					<option value="5" >审核失败</option>
-					<option value="6" >下架</option>
-					<option value="7" >关闭</option>
 				</select>
 			</div>
 			<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
@@ -41,7 +39,7 @@
 		</form>
 	</div>
 	<div id="dataMsg"></div>
-	<div id="productPager"></div>
+	<div id="memberPager"></div>
 </div>
 <!--_footer 作为公共模版分离出去-->
 <jsp:include page="../common/static-js.jsp"></jsp:include>
@@ -66,9 +64,9 @@
 				statusSearch = statusSearch == -1 ? "" : statusSearch;
                 $.ajax({
                     type: "POST",
-                    url: "/product/page.html",
+                    url: "/member/page.html",
                     data: {
-                        status :statusSearch,
+						checkStatus :statusSearch,
                         currentPage :curr || 1,
                         pageSize : pageSize
                     },
@@ -77,7 +75,7 @@
                         var totalPages = $("#totalPages").val();
                         //显示分页
                         laypage({
-                            cont: 'productPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+                            cont: 'memberPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
                             pages: totalPages, //通过后台拿到的总页数
                             curr: curr || 1, //当前页
                             groups: 5 ,//连续显示分页数

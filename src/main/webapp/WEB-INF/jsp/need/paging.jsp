@@ -9,12 +9,12 @@
 <table class="table table-border table-bordered table-bg">
     <thead>
     <tr>
-        <th scope="col" colspan="9">产品列表</th>
+        <th scope="col" colspan="9">需求列表</th>
     </tr>
     <tr class="text-c">
         <%--<th width="25"><input type="checkbox" name="" value=""></th>--%>
         <%--<th width="40">ID</th>--%>
-        <th>产品标题</th>
+        <th>需求标题</th>
         <th>类目</th>
         <th>状态</th>
         <th>更新时间</th>
@@ -23,47 +23,47 @@
     </tr>
     </thead>
     <tbody>
-    <c:forEach items="${products}" var="product" >
+    <c:forEach items="${needs}" var="need" >
     <tr class="text-c">
         <%--<td><input type="checkbox" value="1" name=""></td>--%>
         <%--<td>1</td>--%>
-            <td>${product.title}</td>
-            <td>${product.className}</td>
+            <td>${need.title}</td>
+            <td>${need.className}</td>
             <td >
-                <c:if test="${product.status == 3}">
+                <c:if test="${need.status == 3}">
                     审核中
                 </c:if>
-                <c:if test="${product.status == 4}">
+                <c:if test="${need.status == 4}">
                     审核成功
                 </c:if>
-                <c:if test="${product.status == 5}">
+                <c:if test="${need.status == 5}">
                     审核失败
                 </c:if>
-                <c:if test="${product.status == 6}">
+                <c:if test="${need.status == 6}">
                     下架
                 </c:if>
-                <c:if test="${product.status == 7}">
+                <c:if test="${need.status == 7}">
                     关闭
                 </c:if>
             </td>
-            <td> <fmt:formatDate value="${product.updateTime != null ? product.updateTime:product.addTime}"   pattern="yyyy-MM-dd" type="date" dateStyle="long" /></td>
+            <td> <fmt:formatDate value="${need.updateTime != null ? need.updateTime:need.addTime}"   pattern="yyyy-MM-dd" type="date" dateStyle="long" /></td>
         <td class="td-manage">
             <%--<a style="text-decoration:none" onClick="admin_stop(this,'10001')" href="javascript:;" title="停用">--%>
                 <%--<i class="Hui-iconfont">&#xe631;</i></a>--%>
-            <a title="编辑" href="javascript:;" onclick="admin_edit('审批','/product/toApproval/${product.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
+            <a title="编辑" href="javascript:;" onclick="admin_edit('审批','/need/toApproval/${need.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
             <%--<a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none">--%>
                 <%--<i class="Hui-iconfont">&#xe6e2;</i></a>--%>
         </td>
         <td class="td-manage">
-            <a title="编辑" href="javascript:;" onclick="admin_edit('设置','/product/toSetting/${product.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
+            <a title="编辑" href="javascript:;" onclick="admin_edit('设置','/need/toSetting/${need.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
         </td>
     </tr>
     </c:forEach>
-    <c:if test="${empty products}">
+    <c:if test="${empty needs}">
         <tr>
-            <td colspan="5" style="text-align: center;">暂无产品！</td>
+            <td colspan="5" style="text-align: center;">暂无需求！</td>
         </tr>
     </c:if>
     </tbody>

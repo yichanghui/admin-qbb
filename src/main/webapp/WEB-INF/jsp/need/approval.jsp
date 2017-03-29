@@ -28,20 +28,20 @@
 
         <div class="c_right">
             <form class="layui-form" action="" id="dataForm">
-                <input type="hidden" id="relateId" name="relateId" value="${product.id}">
+                <input type="hidden" id="relateId" name="relateId" value="${need.id}">
                 <div class="layui-form-item">
                     <label class="layui-form-label">当前产品状态:</label>
                     <label class="layui-form-label">
-                        <c:if test="${product.status == 3}">
+                        <c:if test="${need.status == 3}">
                             审核中
                         </c:if>
-                        <c:if test="${product.status == 4}">
+                        <c:if test="${need.status == 4}">
                             审核成功
                         </c:if>
-                        <c:if test="${product.status == 5}">
+                        <c:if test="${need.status == 5}">
                             审核失败
                         </c:if>
-                        <c:if test="${product.status == 7}">
+                        <c:if test="${need.status == 7}">
                             关闭
                         </c:if>
                     </label>
@@ -55,7 +55,7 @@
                             <option value="5" >驳回</option>
                             <option value="7" >关闭</option>
                         </select>
-                        <input type="hidden" id="status" name="status" value="${product.status}">
+                        <input type="hidden" id="status" name="status" value="${need.status}">
                     </div>
                 </div>
                 <div class="layui-form-item layui-form-text">
@@ -71,7 +71,7 @@
                 </div>
             </form>
             <div id="dataMsg"></div>
-            <div id="productPager"></div>
+            <div id="needPager"></div>
         </div>
         <div class="clear"></div>
     </div>
@@ -89,7 +89,7 @@
         form.on('submit(demo1)', function(data){
             $.ajax({
                 type: "POST",
-                url: "/product/approval.json",
+                url: "/need/approval.json",
                 data: $("#dataForm").serialize(),
                 dataType: "json",
                 success: function (data) {
@@ -109,7 +109,7 @@
         function paging(curr){
             $.ajax({
                 type: "POST",
-                url: "/product/approvalPage.html",
+                url: "/need/approvalPage.html",
                 data: {
                     relateId:$("#relateId").val(),
                     currentPage :curr || 1,
@@ -120,7 +120,7 @@
                     var totalPages = $("#totalPages").val();
                     //显示分页
                     laypage({
-                        cont: 'productPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+                        cont: 'needPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
                         pages: totalPages, //通过后台拿到的总页数
                         curr: curr || 1, //当前页
                         groups: 5 ,//连续显示分页数

@@ -5,10 +5,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
 import com.hiveview.entity.ApprovalRecord;
+import com.hiveview.entity.Member;
 import com.hiveview.entity.Paging;
-import com.hiveview.entity.Product;
 import com.hiveview.service.IApprovalRecordService;
-import com.hiveview.service.IProductService;
+import com.hiveview.service.IMemberService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import utils.IssueType;
+import utils.MemberType;
 import utils.log.LogMgr;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,11 +25,11 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/product")
-public class ProductAction extends BaseController {
+@RequestMapping("/member")
+public class AdviserAction extends BaseController {
 
     @Autowired
-    private IProductService productService;
+    private IMemberService memberService;
     @Autowired
     private IApprovalRecordService approvalRecordService;
 
@@ -36,7 +37,7 @@ public class ProductAction extends BaseController {
 
     @RequestMapping(value="/list")
     public String list() {
-        return "product/product_list";
+        return "member/member_list";
     }
 
     /**
@@ -47,25 +48,26 @@ public class ProductAction extends BaseController {
      */
     @RequestMapping(value="/toApproval/{id}")
     public ModelAndView toApproval(@PathVariable("id") long id,ModelAndView mav) {
-        Product product = productService.getProductById(id);
-        mav.getModel().put("product", product);
-        mav.setViewName("product/approval");
+        Member member = memberService.getMemberById(id);
+        mav.getModel().put("member", member);
+        mav.setViewName("member/approval");
         return mav;
     }
     @RequestMapping(value="/page")
     public ModelAndView page(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
-        Product product = new Product();
-        String status = request.getParameter("status");
-        if (StringUtil.isNotEmpty(status)) {
-                product.setStatus(Integer.parseInt(status));
+        Member member = new Member();
+        String checkStatus = request.getParameter("checkStatus");
+        if (StringUtil.isNotEmpty(checkStatus)) {
+                member.setCheckStatus(Integer.parseInt(checkStatus));
         }
+        member.setType(MemberType.ADVISER.getVal());
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-        List<Product> products =  productService.getProductPage(product);
+        List<Member> members =  memberService.getOpendMemberPage(member);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
-        mav.getModel().put("products",products);
-        mav.setViewName("product/paging");
+        mav.getModel().put("members",members);
+        mav.setViewName("member/paging");
         return mav;
     }
 
@@ -81,7 +83,7 @@ public class ProductAction extends BaseController {
         String relateId = request.getParameter("relateId");
         if (StringUtils.isNotEmpty(relateId)) {
             ApprovalRecord approvalRecord = new ApprovalRecord();
-            approvalRecord.setType(IssueType.PRODUCT.getVal());
+            approvalRecord.setType(IssueType.ADVISER.getVal());
             approvalRecord.setRelateId(Long.parseLong(relateId));
             Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
             List<ApprovalRecord> approvalRecords =  approvalRecordService.getApprovalList(approvalRecord);
@@ -89,7 +91,7 @@ public class ProductAction extends BaseController {
             mav.getModel().put("paging",paging);
             mav.getModel().put("approvalRecords",approvalRecords);
         }
-        mav.setViewName("product/approvalPage");
+        mav.setViewName("member/approvalPage");
         return mav;
     }
 
@@ -107,13 +109,13 @@ public class ProductAction extends BaseController {
         if (approvalRecord.getRelateId() != null  && status != null && status >0) {
             try {
                 approvalRecord.setAddTime(new Date());
-                approvalRecord.setType(IssueType.PRODUCT.getVal());
+                approvalRecord.setType(IssueType.ADVISER.getVal());
                 approvalRecord.setOperationId(super.getSysUserId(request));
                 approvalRecordService.saveApproval(approvalRecord);
-                Product product = new Product();
-                product.setId(approvalRecord.getRelateId());
-                product.setStatus(status);
-                productService.updateProduct(product);
+                Member member = new Member();
+                member.setId(approvalRecord.getRelateId());
+                member.setCheckStatus(status);
+                memberService.updateMember(member);
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -123,12 +125,12 @@ public class ProductAction extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value="/operation")
-    public Boolean operation(Product product) {
+    public Boolean operation(Member member) {
         Boolean flag = false;
-        if (product.getId() != null) {
+        if (member.getId() != null) {
             try {
-                product.setUpdateTime(new Date());
-                productService.updateProduct(product);
+                member.setUpdateTime(new Date());
+                memberService.updateMember(member);
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -145,9 +147,9 @@ public class ProductAction extends BaseController {
      */
     @RequestMapping(value="/toSetting/{id}")
     public ModelAndView toSetting(@PathVariable("id") long id,ModelAndView mav) {
-        Product product = productService.getProductById(id);
-        mav.getModel().put("product", product);
-        mav.setViewName("product/setting");
+        Member member = memberService.getMemberById(id);
+        mav.getModel().put("member", member);
+        mav.setViewName("member/setting");
         return mav;
     }
 

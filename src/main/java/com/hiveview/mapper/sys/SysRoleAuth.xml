@@ -8,7 +8,7 @@
   <insert id="addRoleAuth" parameterType="com.hiveview.entity.sys.SysRoleAuth">
   INSERT INTO sys_role_auth (role_id,auth_id) VALUES (#{roleId},#{authId});
   </insert>
-  <delete id="deleteRoleAuth" parameterType="INTEGER">
+  <delete id="deleteRoleAuth" parameterType="BigInteger">
   DELETE FROM sys_role_auth WHERE role_id = #{roleId}
   </delete>
 </mapper>
