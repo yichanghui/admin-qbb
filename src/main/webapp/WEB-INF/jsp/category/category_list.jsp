@@ -13,28 +13,31 @@
 	<![endif]-->
 	<jsp:include page="../common/static.jsp"></jsp:include>
 	<![endif]-->
-	<title>需求管理</title>
+	<title>类目管理</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 需求管理 <span class="c-gray en">&gt;</span> 需求列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 类目管理 <span class="c-gray en">&gt;</span> 类目列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div class="text-c">
-		<form class="layui-form" action="" id="needForm">
+		<form class="layui-form" action="" >
 		<div class="layui-form-item">
-			<div class="layui-inline">
-			<label class="layui-form-label">需求状态</label>
-			<div class="layui-input-inline">
-				<select  lay-filter="statusSearch" id="statusSearch">
-					<option value="-1">全部</option>
-					<%--<option value="宁波"selected="" disabled="">宁波</option>--%>
-					<option value="3" >审核中</option>
-					<option value="4" >审核成功</option>
-					<option value="5" >审核失败</option>
-					<option value="6" >下架</option>
-					<option value="7" >关闭</option>
-				</select>
-			</div>
-			</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">类目等级</label>
+					<div class="layui-input-inline">
+						<select   id="categoryLevel">
+							<option value="-1">全部</option>
+							<option value="1">1</option>
+							<option value="2" >2</option>
+							<option value="3" >3</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">类目名称</label>
+					<div class="layui-input-inline">
+						<input type="text" name="categoryName" id="categoryName" class="layui-input">
+					</div>
+				</div>
 			<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
 		</div>
 		<%--<div class="layui-input-block">--%>
@@ -43,7 +46,7 @@
 		</form>
 	</div>
 	<div id="dataMsg"></div>
-	<div id="needPager"></div>
+	<div id="categoryPager"></div>
 </div>
 <!--_footer 作为公共模版分离出去-->
 <jsp:include page="../common/static-js.jsp"></jsp:include>
@@ -64,13 +67,14 @@
             //以下将以jquery.ajax为例，演示一个异步分页
             var pageSize = 5;
             function paging(curr){
-				var statusSearch = $("#statusSearch").val();
-				statusSearch = statusSearch == -1 ? "" : statusSearch;
+                var categoryLevel = $("#categoryLevel").val();
+                categoryLevel = categoryLevel == -1 ? "" : categoryLevel;
                 $.ajax({
                     type: "POST",
-                    url: "/need/page.html",
+                    url: "/category/page.html",
                     data: {
-                        status :statusSearch,
+                        categoryLevel:categoryLevel,
+                        categoryName :$("#categoryName").val(),
                         currentPage :curr || 1,
                         pageSize : pageSize
                     },
@@ -79,7 +83,7 @@
                         var totalPages = $("#totalPages").val();
                         //显示分页
                         laypage({
-                            cont: 'needPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+                            cont: 'categoryPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
                             pages: totalPages, //通过后台拿到的总页数
                             curr: curr || 1, //当前页
                             groups: 5 ,//连续显示分页数

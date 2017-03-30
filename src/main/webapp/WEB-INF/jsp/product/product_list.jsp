@@ -21,8 +21,9 @@
 	<div class="text-c">
 		<form class="layui-form" action="" id="needForm">
 		<div class="layui-form-item">
-			<label class="layui-form-label">产品状态</label>
-			<div class="layui-input-inline">
+			<div class="layui-inline">
+				<label class="layui-form-label">产品状态</label>
+				<div class="layui-input-inline">
 				<select  lay-filter="statusSearch" id="statusSearch">
 					<option value="-1">全部</option>
 					<%--<option value="宁波"selected="" disabled="">宁波</option>--%>
@@ -32,6 +33,7 @@
 					<option value="6" >下架</option>
 					<option value="7" >关闭</option>
 				</select>
+				</div>
 			</div>
 			<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
 		</div>

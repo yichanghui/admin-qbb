@@ -21,6 +21,7 @@
 	<div class="text-c">
 		<form class="layui-form" action="" id="needForm">
 		<div class="layui-form-item">
+			<div class="layui-inline">
 			<label class="layui-form-label">顾问状态</label>
 			<div class="layui-input-inline">
 				<select  lay-filter="statusSearch" id="statusSearch">
@@ -30,6 +31,7 @@
 					<option value="4" >审核成功</option>
 					<option value="5" >审核失败</option>
 				</select>
+			</div>
 			</div>
 			<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
 		</div>
