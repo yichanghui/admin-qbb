@@ -14,8 +14,6 @@
         .member_menu{border: 1px solid #EEE;}
         .member_menu li{width: 100%;height:35px;line-height:35px;border-bottom: 1px solid #eee;}
         .member_menu li a{margin-left:20px;}
-        .gonggao_title{margin: 15px 5px;}
-        .gonggao{border: 1px solid #EEE;}
         .gonggao li{width: 100%;height:45px;line-height:45px;border-bottom: 1px solid #eee;}
         .gonggao li a{margin-left: 15px;}
         .c_right{margin-left:10px;width: 958px;float: left;}
@@ -24,13 +22,10 @@
 </head>
 <body>
 <div id="container">
-    <div class="content memver_c">
-
-        <div class="c_right">
             <form class="layui-form" action="" id="dataForm">
                 <input type="hidden" id="relateId" name="relateId" value="${product.id}">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">当前产品状态:</label>
+                    <label class="layui-form-label">当前状态:</label>
                     <label class="layui-form-label">
                         <c:if test="${product.status == 3}">
                             审核中
@@ -72,9 +67,6 @@
             </form>
             <div id="dataMsg"></div>
             <div id="productPager"></div>
-        </div>
-        <div class="clear"></div>
-    </div>
 </div>
 <script src="../plugins/layui/layui.js" charset="utf-8"></script>
 <script>

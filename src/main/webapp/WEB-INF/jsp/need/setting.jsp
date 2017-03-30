@@ -10,22 +10,13 @@
     <link rel="stylesheet" href="../plugins/layui/css/global.css">
     <style>
         .memver_c{margin-top: 15px;margin-bottom: 15px;}
-        .c_left{width: 210px;float:left;}
-        .member_menu{border: 1px solid #EEE;}
         .member_menu li{width: 100%;height:35px;line-height:35px;border-bottom: 1px solid #eee;}
         .member_menu li a{margin-left:20px;}
-        .gonggao_title{margin: 15px 5px;}
-        .gonggao{border: 1px solid #EEE;}
-        .gonggao li{width: 100%;height:45px;line-height:45px;border-bottom: 1px solid #eee;}
-        .gonggao li a{margin-left: 15px;}
-        .c_right{margin-left:10px;width: 958px;float: left;}
         .site-demo-upload, .site-demo-upload img{border-radius:0;}
     </style>
 </head>
 <body>
 <div id="container">
-    <div class="content memver_c">
-        <div class="c_right">
             <form class="layui-form" action="" id="dataForm">
                 <input type="hidden"  name="id" value="${need.id}">
                 <div class="layui-form-item">
@@ -54,9 +45,6 @@
             </form>
             <div id="dataMsg"></div>
             <div id="needPager"></div>
-        </div>
-        <div class="clear"></div>
-    </div>
 </div>
 <script src="../plugins/layui/layui.js" charset="utf-8"></script>
 <script>

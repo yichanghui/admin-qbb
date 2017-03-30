@@ -24,8 +24,6 @@
 </head>
 <body>
 <div id="container">
-    <div class="content memver_c">
-        <div class="c_right">
             <form class="layui-form" action="" id="dataForm">
                 <input type="hidden"  name="id" value="${product.id}">
                 <div class="layui-form-item">
@@ -71,9 +69,6 @@
             </form>
             <div id="dataMsg"></div>
             <div id="productPager"></div>
-        </div>
-        <div class="clear"></div>
-    </div>
 </div>
 <script src="../plugins/layui/layui.js" charset="utf-8"></script>
 <script>

@@ -6,24 +6,23 @@
 
 <table class="layui-table" lay-skin="line">
     <colgroup>
-        <col width="150">
-        <col width="150">
-        <col width="150">
-        <col width="200">
+        <col width="90">
+        <col width="120">
+        <col width="190">
+        <col>
     </colgroup>
     <thead>
     <tr>
         <th>操作人</th>
-        <th>内容</th>
         <th>状态</th>
         <th>添加时间</th>
+        <th>内容</th>
     </tr>
     </thead>
     <tbody>
     <c:forEach items="${approvalRecords}" var="approval" >
     <tr class="text-c">
             <td>${approval.operationName}</td>
-            <td>${approval.comment}</td>
             <td >
                 <c:if test="${approval.status == 4}">
                     审核成功
@@ -35,7 +34,8 @@
                     关闭
                 </c:if>
             </td>
-            <td> <fmt:formatDate value="${approval.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
+        <td> <fmt:formatDate value="${approval.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
+        <td>${approval.comment}</td>
     </tr>
     </c:forEach>
     <c:if test="${empty approvalRecords}">
