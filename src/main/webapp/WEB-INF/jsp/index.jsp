@@ -48,7 +48,7 @@
 						<a href="#" class="dropDown_A">${currentUser.userName} <i class="Hui-iconfont">&#xe6d5;</i></a>
 						<ul class="dropDown-menu menu radius box-shadow">
 							<li><a href="javascript:;" onClick="myselfinfo()">个人信息</a></li>
-							<li><a href="#">修改密码</a></li>
+							<li><a href="javascript:void(0)"  id="updatePassWD">修改密码</a></li>
 							<li><a href="logout.html">退出</a></li>
 						</ul>
 					</li>
@@ -163,19 +163,33 @@
 	function member_add(title,url,w,h){
 		layer_show(title,url,w,h);
 	}
-
+		layui.use(['form','laypage', 'layer'], function(){
+				var laypage = layui.laypage
+						,layer = layui.layer;
+			$("#updatePassWD").click(function(){
+				layer.open({
+					type: 2,
+					area: ['800px', '500px'],
+					fix: false, //不固定
+					maxmin: true,
+					shade:0.4,
+					title: "修改密码",
+					content: "sysUser/toUpdatePassWd.html"
+				});
+			});
+		});
 
 </script>
 
 <!--此乃百度统计代码，请自行删除-->
 <script>
-	var _hmt = _hmt || [];
-	(function() {
-		var hm = document.createElement("script");
-		hm.src = "https://hm.baidu.com/hm.js?080836300300be57b7f34f4b3e97d911";
-		var s = document.getElementsByTagName("script")[0];
-		s.parentNode.insertBefore(hm, s);
-	})();
+//	var _hmt = _hmt || [];
+//	(function() {
+//		var hm = document.createElement("script");
+//		hm.src = "https://hm.baidu.com/hm.js?080836300300be57b7f34f4b3e97d911";
+//		var s = document.getElementsByTagName("script")[0];
+//		s.parentNode.insertBefore(hm, s);
+//	})();
 </script>
 <!--/此乃百度统计代码，请自行删除-->
 </body>

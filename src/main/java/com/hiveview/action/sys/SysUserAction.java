@@ -1,18 +1,17 @@
 package com.hiveview.action.sys;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.hiveview.entity.bo.AjaxPage;
+import com.hiveview.entity.bo.Data;
+import com.hiveview.entity.bo.ScriptPage;
+import com.hiveview.entity.sys.SysUser;
+import com.hiveview.service.sys.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.hiveview.entity.bo.AjaxPage;
-import com.hiveview.entity.bo.Data;
-import com.hiveview.entity.bo.ScriptPage;
-import com.hiveview.entity.sys.SysUser;
-import com.hiveview.service.sys.SysUserService;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/sysUser")
@@ -56,7 +55,10 @@ public class SysUserAction {
 		}
 		return data;
 	}
-	
+	@RequestMapping(value = "/toUpdatePassWd")
+	public String toUpdatePassWd(){
+		return "account/update_pwd";
+	}
 	@RequestMapping("/updateSysUserPwd")
 	@ResponseBody
 	public Data updateSysUserPwd(String pwd,String newPwd,HttpServletRequest req){
