@@ -15,6 +15,7 @@
         <th>名称</th>
         <th>性别</th>
         <th>电话</th>
+        <th>会员类型</th>
         <th>注册时间</th>
     </tr>
     </thead>
@@ -28,6 +29,10 @@
                 <c:if test="${member.sex == 'female'}">女</c:if>
             </td>
             <td>${member.mobile}</td>
+            <td>
+                <c:if test="${member.type == 0}">普通会员</c:if>
+                <c:if test="${member.type == 1}">顾问会员</c:if>
+            </td>
             <td> <fmt:formatDate value="${member.addTime}"   pattern="yyyy-MM-dd" type="date" dateStyle="long" /></td>
     </tr>
     </c:forEach>
