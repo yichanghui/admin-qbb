@@ -85,6 +85,7 @@ public class CategoryAction extends BaseController {
                 Category category = new Category();
                 category.setCode(code);
                 category.setStatus(StatusUtil.INVALID.getVal());
+                category.setUpdateTime(new Date());
                 categoryService.updateByCode(category);
 //                List<Category> categorys = categoryService.getCategory(category);
 //                if (CollectionUtils.isNotEmpty(categorys)) {
@@ -101,26 +102,20 @@ public class CategoryAction extends BaseController {
 
     /**
      * 去添加类目
-     * @param id
      * @param mav
      * @return
      */
-    @RequestMapping(value="/toAdd/{level}")
-    public ModelAndView toAdd(@PathVariable("level") Integer level,ModelAndView mav) {
-        if (level != LevelUtil.ONE_LEVEL.getVal()) {
-            Category category = new Category();
-            category.setLevel(level-1);
-            List<Category> parentCategorys = categoryService.getCategory(category);
-            mav.getModel().put("parentCategorys", parentCategorys);
+    @RequestMapping(value="/toAdd/{parentId}")
+    public ModelAndView toAdd(ModelAndView mav,@PathVariable("parentId") Long parentId) {
+        if (parentId > 0 ) {
+            Category parentCategory = categoryService.getCategoryById(parentId);
+            mav.getModel().put("parentCategory", parentCategory);
         }
-        mav.getModel().put("level", level);
         mav.setViewName("category/category_add");
         return mav;
     }
     /**
      * 去添加类目
-     * @param id
-     * @param mav
      * @return
      */
     @ResponseBody

@@ -9,7 +9,7 @@
 <table class="table table-border table-bordered table-bg">
     <thead>
     <tr>
-        <th scope="col" colspan="4">会员列表</th>
+        <th scope="col" colspan="5">会员列表</th>
     </tr>
     <tr class="text-c">
         <th>名称</th>
@@ -33,12 +33,12 @@
                 <c:if test="${member.type == 0}">普通会员</c:if>
                 <c:if test="${member.type == 1}">顾问会员</c:if>
             </td>
-            <td> <fmt:formatDate value="${member.addTime}"   pattern="yyyy-MM-dd" type="date" dateStyle="long" /></td>
+            <td> <fmt:formatDate value="${member.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
     </tr>
     </c:forEach>
     <c:if test="${empty members}">
         <tr>
-            <td colspan="4" style="text-align: center;">暂无会员！</td>
+            <td colspan="5" style="text-align: center;">暂无会员！</td>
         </tr>
     </c:if>
     </tbody>

@@ -9,17 +9,14 @@
 <table class="table table-border table-bordered table-bg">
     <thead>
     <tr>
-        <th scope="col" colspan="9">需求列表</th>
+        <th scope="col" colspan="5">需求列表</th>
     </tr>
     <tr class="text-c">
-        <%--<th width="25"><input type="checkbox" name="" value=""></th>--%>
-        <%--<th width="40">ID</th>--%>
         <th>需求标题</th>
         <th>类目</th>
         <th>状态</th>
         <th>更新时间</th>
-        <th>审批</th>
-        <th>设置</th>
+        <th>添加推荐</th>
     </tr>
     </thead>
     <tbody>
@@ -48,22 +45,14 @@
             </td>
             <td> <fmt:formatDate value="${need.updateTime != null ? need.updateTime:need.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
         <td class="td-manage">
-            <%--<a style="text-decoration:none" onClick="admin_stop(this,'10001')" href="javascript:;" title="停用">--%>
-                <%--<i class="Hui-iconfont">&#xe631;</i></a>--%>
-            <a title="编辑" href="javascript:;" onclick="admin_edit('审批','/need/toApproval/${need.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
-                <i class="Hui-iconfont">&#xe6df;</i></a>
-            <%--<a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none">--%>
-                <%--<i class="Hui-iconfont">&#xe6e2;</i></a>--%>
-        </td>
-        <td class="td-manage">
-            <a title="编辑" href="javascript:;" onclick="admin_edit('设置','/need/toSetting/${need.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
+            <a title="编辑" href="javascript:;" name="addRecommend" id="${need.id}" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
         </td>
     </tr>
     </c:forEach>
     <c:if test="${empty needs}">
         <tr>
-            <td colspan="5" style="text-align: center;">暂无需求！</td>
+            <td colspan="6" style="text-align: center;">暂无需求！</td>
         </tr>
     </c:if>
     </tbody>
@@ -72,5 +61,31 @@
    <input type="hidden" id="totalPages" value="${paging.totalPages}"/>
    <input type="hidden" id="currentPage" value="${paging.currentPage}"/>
 <script type="text/javascript">
-
+    $(function () {
+        $("a[name='addRecommend']").click(function() {
+            var thisObj = $(this);
+            var id = thisObj.attr("id");
+            layer.confirm("您确定要添加推荐吗？", {
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                $.ajax({
+                    type: "POST",
+                    url: "/needRecommend/addRecommend/"+id+".json",
+//                    data: {needId:id},
+                    dataType: "json",
+                    success: function(data){
+                        layer.close(index);
+                        if(data) {
+//                            thisObj.parents("tr").remove();
+                            parent.location.reload();
+                        }else {
+                            layer.msg("操作失败！");
+                        }
+                    }
+                });
+            }, function(index){
+//                 layer.close(index);
+            });
+        });
+    });
 </script> 

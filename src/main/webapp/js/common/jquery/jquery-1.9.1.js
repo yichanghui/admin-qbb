@@ -9715,9 +9715,9 @@ $(document).click(function(event){
     var obj = e.srcElement || e.target;
     var objClass = obj.className;
 	if(objClass=="btn btn-success"||objClass=="btn btn-primary"||objClass=="l-btn-text"||objClass=="l-btn-left"){
-		$.post("loginChecksession.json",null,function(data){
-			if(data.data==null||data.data.code==0)
-				$.messager.show({title:titleInfo,msg:'<span style="color:red">警告：</span>您已经退出登录！',timeout:10000,showType:'slide'});
-		});
+		// $.post("loginChecksession.json",null,function(data){
+		// 	if(data.data==null||data.data.code==0)
+		// 		$.messager.show({title:titleInfo,msg:'<span style="color:red">警告：</span>您已经退出登录！',timeout:10000,showType:'slide'});
+		// });
 	}
 });

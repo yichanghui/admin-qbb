@@ -14,6 +14,7 @@ import com.hiveview.entity.bo.Data;
 import com.hiveview.entity.sys.SysUser;
 import com.hiveview.service.sys.SysAuthService;
 import com.hiveview.service.sys.SysUserService;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
@@ -34,6 +35,7 @@ public class LoginAction {
 		return "common/welcome";
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/loginChecksession", method = RequestMethod.POST)
 	public Data loginChecksession(HttpServletRequest req) {
 		if(req.getSession().getAttribute("currentUser") != null)

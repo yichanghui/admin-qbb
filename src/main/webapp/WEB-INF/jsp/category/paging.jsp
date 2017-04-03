@@ -18,6 +18,7 @@
         <th>类目等级</th>
         <th>类目code</th>
         <th>更新时间</th>
+        <th>添加子类目</th>
         <th>设置</th>
         <th>删除</th>
     </tr>
@@ -30,18 +31,18 @@
             <td>${category.name}</td>
             <td>${category.level}</td>
             <td>${category.code}</td>
-            <td> <fmt:formatDate value="${category.updateTime != null ? category.updateTime:category.addTime}"   pattern="yyyy-MM-dd" type="date" dateStyle="long" /></td>
+            <td> <fmt:formatDate value="${category.updateTime != null ? category.updateTime:category.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
+        <td class="td-manage">
+            <a title="添加子类目" href="javascript:void(0);" onclick="admin_edit('添加子类目','/category/toAdd/${category.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
+                <i class="Hui-iconfont">&#xe6df;</i></a>
+        </td>
         <td class="td-manage">
             <a title="编辑" href="javascript:void(0);" onclick="admin_edit('设置','/category/toSetting/${category.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
         </td>
         <td class="td-manage">
-                <%--<a style="text-decoration:none" onClick="admin_stop(this,'10001')" href="javascript:;" title="停用">--%>
-                <%--<i class="Hui-iconfont">&#xe631;</i></a>--%>
             <a title="删除" href="javascript:void(0);" name="delete" code="${category.code}" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
-                <%--<a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none">--%>
-                <%--<i class="Hui-iconfont">&#xe6e2;</i></a>--%>
         </td>
     </tr>
     </c:forEach>

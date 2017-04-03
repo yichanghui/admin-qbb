@@ -18,24 +18,32 @@
 <body>
 <div id="container">
             <form class="layui-form" action="" id="dataForm">
-                <input type="hidden"  name="level" value="${level}">
-                <input type="hidden"  name="parentFullName">
+                <input type="hidden"  name="level" value="${parentCategory.level != null ? parentCategory.level +1 :1 }">
+                <input type="hidden"  name="parentFullName" value="${parentCategory.fullName}">
+                <input type="hidden"  name="parentId" value="${parentCategory.id}">
+                <input type="hidden"  name="parentCode" value="${parentCategory.code}">
                 <input type="hidden"  name="fullName">
-                <input type="hidden"  name="parentCode">
-                <c:if test="${level != 1}">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">父级目录</label>
-                    <div class="layui-input-inline">
-                        <select lay-filter="parentSelect" name="parentId">
-                            <option value="">请选择</option>
-                            <c:forEach items="${parentCategorys}" var="category">
-                                <option id="category${category.id}" value="${category.id}" code="${category.code}" fullName="${category.fullName}" >${category.name}</option>
-                            </c:forEach>
-                        </select>
+                <%--<c:if test="${level != 1}">--%>
+                <%--<div class="layui-form-item">--%>
+                    <%--<label class="layui-form-label">父级目录</label>--%>
+                    <%--<div class="layui-input-inline">--%>
+                        <%--<select lay-filter="parentSelect" name="parentId">--%>
+                            <%--<option value="">请选择</option>--%>
+                            <%--<c:forEach items="${parentCategorys}" var="category">--%>
+                                <%--<option id="category${category.id}" value="${category.id}" code="${category.code}" fullName="${category.fullName}" >${category.name}</option>--%>
+                            <%--</c:forEach>--%>
+                        <%--</select>--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+                <%--</c:if>--%>
+                <c:if test="${parentCategory != null}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">父类目名称</label>
+                        <label class="layui-form-label">
+                                ${parentCategory.name}
+                        </label>
                     </div>
-                </div>
                 </c:if>
-
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label">类目名称</label>
@@ -67,7 +75,7 @@
 <script src="../plugins/layui/layui.js" charset="utf-8"></script>
 <script>
     $(function () {
-        var level = ${level};
+        var level = $("input[name='level']").val();
         layui.use(['form', 'layedit'], function(){
             var form = layui.form()
                     ,layer = layui.layer
@@ -92,7 +100,8 @@
                     success: function (data) {
                         if (data) {
                             layer.alert("设置成功");
-                            parent.layer.closeAll();
+//                            parent.layer.closeAll();
+                            parent.location.reload();
                         } else {
                             layer.msg("失败！");
                         }
@@ -100,11 +109,11 @@
                 });
                 return false;
             });
-            form.on('select(parentSelect)', function(data) {
-                var $obj = $("#category"+data.value);
-                $("input[name='parentFullName']").val($obj.attr("fullName"));
-                $("input[name='parentCode']").val($obj.attr("code"));
-            })
+//            form.on('select(parentSelect)', function(data) {
+//                var $obj = $("#category"+data.value);
+//                $("input[name='parentFullName']").val($obj.attr("fullName"));
+//                $("input[name='parentCode']").val($obj.attr("code"));
+//            })
         });
     });
 </script>

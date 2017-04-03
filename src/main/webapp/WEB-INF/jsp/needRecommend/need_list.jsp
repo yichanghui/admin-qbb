@@ -13,32 +13,23 @@
 	<![endif]-->
 	<jsp:include page="../common/static.jsp"></jsp:include>
 	<![endif]-->
-	<title>类目管理</title>
+	<title>需求管理</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 类目管理 <span class="c-gray en">&gt;</span> 类目列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div class="text-c">
 		<form class="layui-form" action="" >
-
-				<div class="layui-inline">
-					<label class="layui-form-label">类目名称</label>
-					<div class="layui-input-inline">
-						<input type="text" name="categoryName" id="categoryName" class="layui-input">
-					</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">需求名称</label>
+				<div class="layui-input-inline">
+					<input type="text" name="needName" id="needName" class="layui-input">
 				</div>
+			</div>
 			<button type="button"  class="btn btn-success"  id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
-			<button type="button"  class="btn btn-success" name="addCategory" level="1" >添加一级类目</button>
-			<%--<button type="button"  class="btn btn-success" name="addCategory" level="2" >添加二级类目</button>--%>
-			<%--<button type="button"  class="btn btn-success" name="addCategory" level="3" >添加三级类目</button>--%>
-		</div>
-		<%--<div class="layui-input-block">--%>
-		<%--<button class="layui-btn" lay-submit="" lay-filter="demo1" >搜索</button>--%>
-		<%--</div>--%>
 		</form>
 	</div>
 	<div id="dataMsg"></div>
-	<div id="categoryPager"></div>
+	<div id="needPager"></div>
 </div>
 <!--_footer 作为公共模版分离出去-->
 <jsp:include page="../common/static-js.jsp"></jsp:include>
@@ -48,58 +39,52 @@
 <script type="text/javascript">
 
 
-	$(function () {
-		layui.use(['form', 'laypage', 'layer'], function () {
-			var laypage = layui.laypage
-					, layer = layui.layer;
+    $(function () {
+        layui.use(['form','laypage', 'layer'], function(){
+            var laypage = layui.laypage
+                ,layer = layui.layer;
 
-			var form = layui.form()
-					, layedit = layui.layedit
-					, laydate = layui.laydate;
-			//以下将以jquery.ajax为例，演示一个异步分页
-			var pageSize = 5;
-
-			function paging(curr) {
-				var categoryLevel = $("#categoryLevel").val();
-				categoryLevel = categoryLevel == -1 ? "" : categoryLevel;
-				$.ajax({
-					type: "POST",
-					url: "/category/page.html",
-					data: {
-						categoryLevel: categoryLevel,
-						categoryName: $("#categoryName").val(),
-						currentPage: curr || 1,
-						pageSize: pageSize
-					},
-					success: function (data) {
-						$("#dataMsg").html(data);
-						var totalPages = $("#totalPages").val();
-						//显示分页
-						laypage({
-							cont: 'categoryPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
-							pages: totalPages, //通过后台拿到的总页数
-							curr: curr || 1, //当前页
-							groups: 5,//连续显示分页数
-							jump: function (obj, first) { //触发分页后的回调
-								if (!first) { //点击跳页触发函数自身，并传递当前页：obj.curr
-									paging(obj.curr);
-								}
-							}
-						});
-					}
-				});
-			};
-			//运行
-			paging();
-			$("#search").click(function () {
-				paging();
-			});
-		});
-
-		$("button[name='addCategory']").click(function () {
-			admin_edit('新建类目', '/category/toAdd/0.html', '1', '800', '500');
-		});
-	});
+            var form = layui.form()
+                ,layedit = layui.layedit
+                ,laydate = layui.laydate;
+            //以下将以jquery.ajax为例，演示一个异步分页
+            var pageSize = 5;
+            function paging(curr){
+//				var statusSearch = $("#statusSearch").val();
+//				statusSearch = statusSearch == -1 ? "" : statusSearch;
+                $.ajax({
+                    type: "POST",
+                    url: "/needRecommend/needPage.html",
+                    data: {
+                        needName:$("#needName").val(),
+                        currentPage :curr || 1,
+                        pageSize : pageSize
+                    },
+                    success: function(data){
+                        $("#dataMsg").html(data);
+                        var totalPages = $("#totalPages").val();
+                        //显示分页
+                        laypage({
+                            cont: 'needPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+                            pages: totalPages, //通过后台拿到的总页数
+                            curr: curr || 1, //当前页
+                            groups: 5 ,//连续显示分页数
+                            jump: function(obj, first){ //触发分页后的回调
+                                if(!first){ //点击跳页触发函数自身，并传递当前页：obj.curr
+                                    paging(obj.curr);
+                                }
+                            }
+                        });
+                    }
+                });
+            };
+            //运行
+            paging();
+            $("#search").click(function () {
+                paging();
+            });
+        });
+    })
 
 
 
