@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.hiveview.action.comm.FileUploadAction;
+import com.hiveview.action.comm.FileUploadOldAction;
 import com.hiveview.common.Constants;
 import com.hiveview.dao.huanwang.InterfaceListDao;
 import com.hiveview.entity.po.huanwang.ContentMedia;
@@ -21,7 +21,7 @@ import com.hiveview.util.huan.HuanUtil;
 @Repository
 public class InterfaceListService {
 	
-	Logger logger = Logger.getLogger(FileUploadAction.class);
+	Logger logger = Logger.getLogger(FileUploadOldAction.class);
 	
 	@Autowired
 	private InterfaceListDao interfaceListDao;

@@ -1,92 +1,82 @@
 package com.hiveview.action.comm;
 
-import com.google.common.collect.Maps;
-import com.hiveview.common.Constants;
-import com.hiveview.entity.bo.Data;
-import com.hiveview.util.ProperManager;
-import org.apache.commons.lang3.time.DateFormatUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Calendar;
+import java.util.Iterator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import utils.log.LogMgr;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.hiveview.common.Constants;
+import com.hiveview.entity.bo.Data;
+import com.hiveview.util.ProperManager;
 
 @Controller
-@RequestMapping("/newFileUpload")
-public class FileUploadAction {
-	Logger logger = Logger.getLogger(FileUploadAction.class);
+@RequestMapping("/fileUpload")
+public class FileUploadOldAction {
+	Logger logger = Logger.getLogger(FileUploadOldAction.class);
 
-	@ResponseBody
 	@RequestMapping(value = "/upload")
-	public Map<String,Object> upload(HttpServletRequest request) throws Exception {
+	public String upload(HttpServletRequest request,
+			HttpServletResponse response, String propKey, Integer ruleType,
+			Integer visitWay) throws Exception {
 
+		int fileType = 1;// 标识文件类型
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		// String basePath =
 		// request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();//访问路径：http://localhost:8080
-//		String basePath = request.getScheme() + "://" + request.getServerName();// 访问路径：http://localhost
+		String basePath = request.getScheme() + "://" + request.getServerName();// 访问路径：http://localhost
 		// String localPath =
 		// request.getSession().getServletContext().getRealPath("upload");//物理路径
 
-		String imgUpload ="uploadFile/uploadImg/"+DateFormatUtils.format(new Date(), "yyyyMMdd");
-		String realPath = request.getSession().getServletContext().getRealPath("/")+imgUpload;
-
-		HashMap<String, Object> result = Maps.newHashMap();
-		Boolean flag = false;
-		// 创建目录 -->若物理路径不存在，则创建物理路径
+		String extName = "";// 扩展名
 		String newFileName = "";// 新文件名
-		if (mkdir(realPath)) {
-			logger.info("+++++++++++++++++创建目录" + realPath + "+++++++++++++++++");
-			String fileName = "";
-			String filePath = "";
 
-			Iterator<String> iter = multipartRequest.getFileNames();
-			while (iter.hasNext()) {
-				MultipartFile file = multipartRequest.getFile(iter.next());
-				fileName = file.getOriginalFilename();
-				//			fileType = getFileType(fileName);
-				//			if (fileType == 4) {
+		Iterator<String> iter = multipartRequest.getFileNames();
+
+		// 创建目录 -->若物理路径不存在，则创建物理路径
+		String propPath = getPathForProperties(propKey);
+		String realPath = mkdir(propPath, 2);
+		logger.info("+++++++++++++++++创建目录" + realPath + "+++++++++++++++++");
+		String fileName = "";
+		while (iter.hasNext()) {
+			MultipartFile file = multipartRequest.getFile(iter.next());
+			fileName = file.getOriginalFilename();
+
+			fileType = getFileType(fileName);
+			if (fileType == 4) {
 				// propKey = "subtitlePath";
-				//			}
-				if (fileName.lastIndexOf(".") > -1) {
-					newFileName = System.currentTimeMillis() + fileName.substring(fileName.lastIndexOf("."));
-					File localFile = null;
-					//				localFile = new File(realPath + "/" + newFileName);
-					filePath = realPath + "//" + newFileName;
-					localFile = new File(filePath);
-					file.transferTo(localFile);
-				}
 			}
-			flag = true;
-		}
 
-//		{
-//				"code": 0 //0表示成功，其它失败
-//				,"msg": "" //提示信息 //一般上传失败后返回
-//				,"data": {
-//					 "src": "图片路径"
-//					,"title": "图片名称" //可选
-//					}
-//		}
-		String imgPath = imgUpload+"/"+newFileName;
-		result.put("flag", flag);
-		result.put("code", flag?0:1);
-		result.put("msg", flag?"图片上传成功！":"图片上传失败！");
-		Map<String, Object> data = Maps.newHashMap();
-		data.put("src", imgPath);
-		result.put("data", data);
-		return result;
+			if (fileName.lastIndexOf(".") > -1) {
+				extName = fileName.substring(fileName.lastIndexOf("."));
+				newFileName = System.currentTimeMillis() + extName;
+
+				File localFile = null;
+				localFile = new File(realPath + "/" + newFileName);
+				file.transferTo(localFile);
+			}
+		}
+		response.setContentType("application/json;charset=UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setHeader("Pragma", "No-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setDateHeader("Expires", 0);
+		final PrintWriter out = response.getWriter();
+		out.print(java.net.URLDecoder.decode(
+				getVisitPath(propPath, visitWay, basePath, realPath,
+						newFileName), "utf-8"));
+		out.flush();
+		return null;
 	}
 	
 	@RequestMapping(value = "/uploadTemp")
@@ -211,8 +201,8 @@ public class FileUploadAction {
 	@ResponseBody
 	@RequestMapping(value = "/delete")
 	public Data delete(HttpServletRequest request,
-					   HttpServletResponse response, String fileUrl, String propKey,
-					   Integer ruleType, Integer visitWay) throws Exception {
+			HttpServletResponse response, String fileUrl, String propKey,
+			Integer ruleType, Integer visitWay) throws Exception {
 		// 获取文件的存放目录
 		String propPath = getPathForProperties(propKey);
 		// 返回最长公共目录 /tvimg/focus
@@ -404,31 +394,12 @@ public class FileUploadAction {
 
 	// 创建目录
 	private String mkdir(String path, Integer flag) {
-		String date = DateFormatUtils.format(new Date(), "yyyyMMdd");
-		String realPath = path + date;
+		String realPath = path + getYMD(flag);
 		File saveFile = new File(realPath);
 		if (!saveFile.exists() && !saveFile.isDirectory()) {
 			saveFile.mkdirs();
 		}
 		return realPath;
-	}
-	// 创建目录
-	private boolean mkdir(String path) {
-		boolean flag = true;
-		try {
-			File saveFile = new File(path);
-			if (!saveFile.exists() && !saveFile.isDirectory()) {
-				saveFile.mkdirs();
-			}
-		} catch (Exception e) {
-			LogMgr.writeErrorLog("创建目录失败",e);
-			flag = false;
-		}
-//		if(!saveFile.getParentFile().exists()) {
-//			//如果目标文件所在的目录不存在，则创建父目录
-//			saveFile.getParentFile().mkdirs();
-//		}
-		return flag;
 	}
 //	private String mkdir(String path) {
 //		File saveFile = new File(path);
@@ -437,6 +408,21 @@ public class FileUploadAction {
 //		}
 //		return path;
 //	}
+
+	// 生成时间(年月日)
+	private static String getYMD(Integer flag) {
+		Calendar cal = Calendar.getInstance();// 使用日历类
+		int year = cal.get(Calendar.YEAR);// 得到年
+		int month = cal.get(Calendar.MONTH) + 1;// 得到月，因为从0开始的，所以要加1
+		int day = cal.get(Calendar.DAY_OF_MONTH);// 得到天
+		StringBuffer ymd = new StringBuffer("/");
+		switch (flag) {
+		case 1:
+			return ymd.append(year).append(month).append(day).toString();
+		default:
+			return ymd.append(year).append(month).toString();
+		}
+	}
 
 	private String getVisitPath(String propPath, Integer visitWay,
 			String basePath, String realPath, String newFileName) {
