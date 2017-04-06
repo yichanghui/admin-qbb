@@ -31,9 +31,9 @@
         <%--<td>1</td>--%>
             <td>${member.name}</td>
             <td>
-                <c:if test="${member.adviserType == 1}">贷款顾问</c:if>
-                <c:if test="${member.adviserType == 2}">金融顾问</c:if>
-                <c:if test="${member.adviserType == 3}">法律顾问</c:if>
+                <c:if test="${member.adviserType == '1-'}">金融顾问</c:if>
+                <c:if test="${member.adviserType == '2-'}">企业顾问</c:if>
+                <c:if test="${member.adviserType == '3-'}">法律顾问</c:if>
             </td>
             <td>
                 <c:if test="${member.level == 1}">普通顾问</c:if>
