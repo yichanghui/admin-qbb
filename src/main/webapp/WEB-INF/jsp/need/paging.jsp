@@ -27,7 +27,7 @@
     <tr class="text-c">
         <%--<td><input type="checkbox" value="1" name=""></td>--%>
         <%--<td>1</td>--%>
-            <td>${need.title}</td>
+            <td><a href="http://qbb.open580.com/need/detail/${need.id}.html" target="_blank"></a>${need.title}</td>
             <td>${need.className}</td>
             <td >
                 <c:if test="${need.status == 3}">
