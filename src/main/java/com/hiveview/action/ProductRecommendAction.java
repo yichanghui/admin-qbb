@@ -4,11 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
-import com.hiveview.entity.ApprovalRecord;
 import com.hiveview.entity.Paging;
 import com.hiveview.entity.Product;
 import com.hiveview.entity.ProductRecommend;
-import com.hiveview.service.IApprovalRecordService;
 import com.hiveview.service.IProductRecommendService;
 import com.hiveview.service.IProductService;
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import utils.IssueType;
 import utils.StatusUtil;
 import utils.log.LogMgr;
 
@@ -41,6 +38,21 @@ public class ProductRecommendAction extends BaseController {
         return "productRecommend/recommend_list";
     }
 
+    @RequestMapping(value="/toSetting/{type}/{productId}")
+    public ModelAndView toSetting(@PathVariable("type")String type,@PathVariable("productId")long productId,ModelAndView mav) {
+        ProductRecommend productRecommend;
+        if (!"add".equals(type)) {
+            productRecommend = productRecommendService.getProductRecommendByPId(productId);
+        }else {
+            productRecommend = new ProductRecommend();
+            productRecommend.setProductId(productId);
+        }
+        mav.getModel().put("productRecommend", productRecommend);
+        mav.setViewName("productRecommend/setting");
+        return mav;
+    }
+
+
     @RequestMapping(value="/page")
     public ModelAndView page(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
@@ -51,10 +63,10 @@ public class ProductRecommendAction extends BaseController {
         }
         productRecommend.setStatus(StatusUtil.VALID.getVal());
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-        List<ProductRecommend> products =  productRecommendService.getProductRecommendPage(productRecommend);
+        List<ProductRecommend> productRecommends =  productRecommendService.getProductRecommendPage(productRecommend);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
-        mav.getModel().put("products",products);
+        mav.getModel().put("productRecommends",productRecommends);
         mav.setViewName("productRecommend/paging");
         return mav;
     }
@@ -75,6 +87,7 @@ public class ProductRecommendAction extends BaseController {
             product.setTitle(productName);
         }
         product.setStatus(StatusUtil.CHECK_SUCCESS.getVal());
+        product.setRecommendShow(true);
         List<Product> products =  productService.getProductPage(product);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
@@ -87,23 +100,24 @@ public class ProductRecommendAction extends BaseController {
      * 添加推荐
      */
     @ResponseBody
-    @RequestMapping(value="/addRecommend/{productId}")
-    public Boolean addRecommend(HttpServletRequest request,@PathVariable("productId")long productId) {
+    @RequestMapping(value="/addRecommend")
+    public Boolean addRecommend(HttpServletRequest request,ProductRecommend productRecommend) {
         Boolean flag = false;
-        if (productId > 0 ) {
+        Long productId = productRecommend.getProductId();
+        if (productId != null ) {
             try {
-                ProductRecommend productRecommend = productRecommendService.getProductRecommendByPId(productId);
-                if (productRecommend == null) {
-                    productRecommend = new ProductRecommend();
-                    productRecommend.setProductId(productId);
-                    productRecommend.setAddTime(new Date());
-                    productRecommend.setOperatorId(super.getSysUserId(request));
-                    productRecommendService.saveRecommend(productRecommend);
-                }else {
-                    productRecommend.setUpdateTime(new Date());
-                    productRecommend.setOperatorId(super.getSysUserId(request));
-                    productRecommend.setStatus(StatusUtil.VALID.getVal());
-                    productRecommendService.updateRecommend(productRecommend);
+                ProductRecommend isHave = productRecommendService.getProductRecommendByPId(productId);
+                Long prId = productRecommend.getId();
+                if (isHave == null || prId != null) {
+                    if (prId == null) {
+                        productRecommend.setAddTime(new Date());
+                        productRecommend.setOperatorId(super.getSysUserId(request));
+                        productRecommendService.saveRecommend(productRecommend);
+                    } else {
+                        productRecommend.setUpdateTime(new Date());
+                        productRecommend.setOperatorId(super.getSysUserId(request));
+                        productRecommendService.updateRecommend(productRecommend);
+                    }
                 }
                 flag = true;
             } catch (Exception e) {
@@ -112,21 +126,8 @@ public class ProductRecommendAction extends BaseController {
         }
         return flag;
     }
-    @ResponseBody
-    @RequestMapping(value="/operation")
-    public Boolean operation(ProductRecommend productRecommend) {
-        Boolean flag = false;
-        if (productRecommend.getId() != null) {
-            try {
-                productRecommend.setUpdateTime(new Date());
-                productRecommendService.updateRecommend(productRecommend);
-                flag = true;
-            } catch (Exception e) {
-                LogMgr.writeErrorLog(e);
-            }
-        }
-        return flag;
-    }
+
+
     @ResponseBody
     @RequestMapping(value="/delete")
     public Boolean delete(HttpServletRequest request) {
@@ -134,12 +135,7 @@ public class ProductRecommendAction extends BaseController {
         Boolean flag = false;
         if (StringUtils.isNotEmpty(recommendId)) {
             try {
-                ProductRecommend productRecommend = new ProductRecommend();
-                productRecommend.setId(Long.parseLong(recommendId));
-                productRecommend.setUpdateTime(new Date());
-                productRecommend.setOperatorId(super.getSysUserId(request));
-                productRecommend.setStatus(StatusUtil.INVALID.getVal());
-                productRecommendService.updateRecommend(productRecommend);
+                productRecommendService.deleteById(Long.parseLong(recommendId));
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);

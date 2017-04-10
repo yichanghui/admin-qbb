@@ -4,9 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
-import com.hiveview.entity.Paging;
 import com.hiveview.entity.Member;
 import com.hiveview.entity.MemberRecommend;
+import com.hiveview.entity.Paging;
 import com.hiveview.service.IMemberRecommendService;
 import com.hiveview.service.IMemberService;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +39,20 @@ public class AdviserRecommendAction extends BaseController {
         return "memberRecommend/recommend_list";
     }
 
+    @RequestMapping(value="/toSetting/{type}/{memberId}")
+    public ModelAndView toSetting(@PathVariable("type")String type,@PathVariable("memberId")long memberId,ModelAndView mav) {
+        MemberRecommend memberRecommend;
+        if (!"add".equals(type)) {
+             memberRecommend = memberRecommendService.getMemberRecommendByMId(memberId);
+        }else {
+            memberRecommend = new MemberRecommend();
+            memberRecommend.setMemberId(memberId);
+        }
+        mav.getModel().put("memberRecommend", memberRecommend);
+        mav.setViewName("memberRecommend/setting");
+        return mav;
+    }
+
     @RequestMapping(value="/page")
     public ModelAndView page(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
@@ -49,10 +63,10 @@ public class AdviserRecommendAction extends BaseController {
         }
         memberRecommend.setStatus(StatusUtil.VALID.getVal());
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-        List<MemberRecommend> members =  memberRecommendService.getMemberRecommendPage(memberRecommend);
+        List<MemberRecommend> memberRecommends =  memberRecommendService.getMemberRecommendPage(memberRecommend);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
-        mav.getModel().put("members",members);
+        mav.getModel().put("memberRecommends",memberRecommends);
         mav.setViewName("memberRecommend/paging");
         return mav;
     }
@@ -64,7 +78,7 @@ public class AdviserRecommendAction extends BaseController {
     }
 
     @RequestMapping(value="/memberPage")
-    public ModelAndView prductPage(HttpServletRequest request, ModelAndView mav) {
+    public ModelAndView memberPage(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
         Member member = new Member();
@@ -75,6 +89,7 @@ public class AdviserRecommendAction extends BaseController {
         member.setType(MemberType.ADVISER.getVal());
         member.setStatus(StatusUtil.VALID.getVal());
         member.setCheckStatus(StatusUtil.CHECK_SUCCESS.getVal());
+        member.setRecommendShow(true);
         List<Member> members =  memberService.getOpendMemberPage(member);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
@@ -87,43 +102,29 @@ public class AdviserRecommendAction extends BaseController {
      * 添加推荐
      */
     @ResponseBody
-    @RequestMapping(value="/addRecommend/{memberId}")
-    public Boolean addRecommend(HttpServletRequest request,@PathVariable("memberId")long memberId) {
+    @RequestMapping(value="/addRecommend")
+    public Boolean addRecommend(HttpServletRequest request,MemberRecommend memberRecommend) {
         Boolean flag = false;
-        if (memberId > 0 ) {
-            try {
-                MemberRecommend memberRecommend = memberRecommendService.getMemberRecommendByMId(memberId);
-                if (memberRecommend == null) {
-                    memberRecommend = new MemberRecommend();
-                    memberRecommend.setMemberId(memberId);
-                    memberRecommend.setAddTime(new Date());
-                    memberRecommend.setOperatorId(super.getSysUserId(request));
-                    memberRecommendService.saveRecommend(memberRecommend);
-                }else {
-                    memberRecommend.setUpdateTime(new Date());
-                    memberRecommend.setOperatorId(super.getSysUserId(request));
-                    memberRecommend.setStatus(StatusUtil.VALID.getVal());
-                    memberRecommendService.updateRecommend(memberRecommend);
+        Long memberId = memberRecommend.getMemberId();
+        try {
+            if (memberId != null) {
+                MemberRecommend isHave = memberRecommendService.getMemberRecommendByMId(memberId);//查看是否已有推荐记录
+                Long rmId = memberRecommend.getId();
+                if (isHave == null || rmId != null) {
+                    if (rmId == null) {
+                        memberRecommend.setAddTime(new Date());
+                        memberRecommend.setOperatorId(super.getSysUserId(request));
+                        memberRecommendService.saveRecommend(memberRecommend);
+                    }else {
+                        memberRecommend.setUpdateTime(new Date());
+                        memberRecommend.setOperatorId(super.getSysUserId(request));
+                        memberRecommendService.updateRecommend(memberRecommend);
+                    }
                 }
                 flag = true;
-            } catch (Exception e) {
-                LogMgr.writeErrorLog(e);
             }
-        }
-        return flag;
-    }
-    @ResponseBody
-    @RequestMapping(value="/operation")
-    public Boolean operation(MemberRecommend memberRecommend) {
-        Boolean flag = false;
-        if (memberRecommend.getId() != null) {
-            try {
-                memberRecommend.setUpdateTime(new Date());
-                memberRecommendService.updateRecommend(memberRecommend);
-                flag = true;
-            } catch (Exception e) {
-                LogMgr.writeErrorLog(e);
-            }
+        } catch (Exception e) {
+            LogMgr.writeErrorLog(e);
         }
         return flag;
     }
@@ -134,12 +135,7 @@ public class AdviserRecommendAction extends BaseController {
         Boolean flag = false;
         if (StringUtils.isNotEmpty(recommendId)) {
             try {
-                MemberRecommend memberRecommend = new MemberRecommend();
-                memberRecommend.setId(Long.parseLong(recommendId));
-                memberRecommend.setUpdateTime(new Date());
-                memberRecommend.setOperatorId(super.getSysUserId(request));
-                memberRecommend.setStatus(StatusUtil.INVALID.getVal());
-                memberRecommendService.updateRecommend(memberRecommend);
+                memberRecommendService.deleteById(Long.parseLong(recommendId));
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -147,6 +143,5 @@ public class AdviserRecommendAction extends BaseController {
         }
         return flag;
     }
-
 
 }

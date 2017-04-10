@@ -65,7 +65,7 @@
             </td>
             <td> <fmt:formatDate value="${member.updateTime != null ? member.updateTime:member.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
         <td class="td-manage">
-            <a title="编辑" href="javascript:;" name="addRecommend" id="${member.id}" class="ml-5" style="text-decoration:none">
+            <a title="编辑" href="javascript:;" id="${member.id}" onclick="admin_edit('设置','/memberRecommend/toSetting/add/${member.id}.html','1','500','300')"  class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
         </td>
     </tr>
@@ -81,31 +81,4 @@
    <input type="hidden" id="totalPages" value="${paging.totalPages}"/>
    <input type="hidden" id="currentPage" value="${paging.currentPage}"/>
 <script type="text/javascript">
-    $(function () {
-        $("a[name='addRecommend']").click(function() {
-            var thisObj = $(this);
-            var id = thisObj.attr("id");
-            layer.confirm("您确定要添加推荐吗？", {
-                btn: ['确定','取消'] //按钮
-            }, function(index){
-                $.ajax({
-                    type: "POST",
-                    url: "/memberRecommend/addRecommend/"+id+".json",
-//                    data: {memberId:id},
-                    dataType: "json",
-                    success: function(data){
-                        layer.close(index);
-                        if(data) {
-//                            thisObj.parents("tr").remove();
-                            parent.location.reload();
-                        }else {
-                            layer.msg("操作失败！");
-                        }
-                    }
-                });
-            }, function(index){
-//                 layer.close(index);
-            });
-        });
-    });
-</script> 
+</script>

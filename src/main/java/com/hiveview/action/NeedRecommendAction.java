@@ -4,9 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
-import com.hiveview.entity.Paging;
 import com.hiveview.entity.Need;
 import com.hiveview.entity.NeedRecommend;
+import com.hiveview.entity.Paging;
 import com.hiveview.service.INeedRecommendService;
 import com.hiveview.service.INeedService;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +38,21 @@ public class NeedRecommendAction extends BaseController {
         return "needRecommend/recommend_list";
     }
 
+    @RequestMapping(value="/toSetting/{type}/{needId}")
+    public ModelAndView toSetting(@PathVariable("type")String type,@PathVariable("needId")long needId,ModelAndView mav) {
+        NeedRecommend needRecommend;
+        if (!"add".equals(type)) {
+            needRecommend = needRecommendService.getNeedRecommendByNId(needId);
+        }else {
+            needRecommend = new NeedRecommend();
+            needRecommend.setNeedId(needId);
+        }
+        mav.getModel().put("needRecommend", needRecommend);
+        mav.setViewName("needRecommend/setting");
+        return mav;
+    }
+
+
     @RequestMapping(value="/page")
     public ModelAndView page(HttpServletRequest request, ModelAndView mav) {
         Paging paging = super.getPaging(request);
@@ -48,10 +63,10 @@ public class NeedRecommendAction extends BaseController {
         }
         needRecommend.setStatus(StatusUtil.VALID.getVal());
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-        List<NeedRecommend> needs =  needRecommendService.getNeedRecommendPage(needRecommend);
+        List<NeedRecommend> needRecommends =  needRecommendService.getNeedRecommendPage(needRecommend);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
-        mav.getModel().put("needs",needs);
+        mav.getModel().put("needRecommends",needRecommends);
         mav.setViewName("needRecommend/paging");
         return mav;
     }
@@ -72,6 +87,7 @@ public class NeedRecommendAction extends BaseController {
             need.setTitle(needName);
         }
         need.setStatus(StatusUtil.CHECK_SUCCESS.getVal());
+        need.setRecommendShow(true);
         List<Need> needs =  needService.getNeedPage(need);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
@@ -84,39 +100,25 @@ public class NeedRecommendAction extends BaseController {
      * 添加推荐
      */
     @ResponseBody
-    @RequestMapping(value="/addRecommend/{needId}")
-    public Boolean addRecommend(HttpServletRequest request,@PathVariable("needId")long needId) {
+    @RequestMapping(value="/addRecommend")
+    public Boolean addRecommend(HttpServletRequest request,NeedRecommend needRecommend) {
         Boolean flag = false;
-        if (needId > 0 ) {
+        Long needId = needRecommend.getNeedId();
+        if (needId != null ) {
             try {
-                NeedRecommend needRecommend = needRecommendService.getNeedRecommendByNId(needId);
-                if (needRecommend == null) {
-                    needRecommend = new NeedRecommend();
-                    needRecommend.setNeedId(needId);
-                    needRecommend.setAddTime(new Date());
-                    needRecommend.setOperatorId(super.getSysUserId(request));
-                    needRecommendService.saveRecommend(needRecommend);
-                }else {
-                    needRecommend.setUpdateTime(new Date());
-                    needRecommend.setOperatorId(super.getSysUserId(request));
-                    needRecommend.setStatus(StatusUtil.VALID.getVal());
-                    needRecommendService.updateRecommend(needRecommend);
+                NeedRecommend isHave = needRecommendService.getNeedRecommendByNId(needId);
+                Long nrId = needRecommend.getId();
+                if (isHave == null || nrId != null) {
+                    if (nrId == null) {
+                        needRecommend.setAddTime(new Date());
+                        needRecommend.setOperatorId(super.getSysUserId(request));
+                        needRecommendService.saveRecommend(needRecommend);
+                    } else {
+                        needRecommend.setUpdateTime(new Date());
+                        needRecommend.setOperatorId(super.getSysUserId(request));
+                        needRecommendService.updateRecommend(needRecommend);
+                    }
                 }
-                flag = true;
-            } catch (Exception e) {
-                LogMgr.writeErrorLog(e);
-            }
-        }
-        return flag;
-    }
-    @ResponseBody
-    @RequestMapping(value="/operation")
-    public Boolean operation(NeedRecommend needRecommend) {
-        Boolean flag = false;
-        if (needRecommend.getId() != null) {
-            try {
-                needRecommend.setUpdateTime(new Date());
-                needRecommendService.updateRecommend(needRecommend);
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
@@ -131,12 +133,7 @@ public class NeedRecommendAction extends BaseController {
         Boolean flag = false;
         if (StringUtils.isNotEmpty(recommendId)) {
             try {
-                NeedRecommend needRecommend = new NeedRecommend();
-                needRecommend.setId(Long.parseLong(recommendId));
-                needRecommend.setUpdateTime(new Date());
-                needRecommend.setOperatorId(super.getSysUserId(request));
-                needRecommend.setStatus(StatusUtil.INVALID.getVal());
-                needRecommendService.updateRecommend(needRecommend);
+                needRecommendService.deleteById(Long.parseLong(recommendId));
                 flag = true;
             } catch (Exception e) {
                 LogMgr.writeErrorLog(e);
