@@ -19,30 +19,35 @@
         <th>操作人</th>
         <th>状态</th>
         <th>推荐时间</th>
+        <th>修改</th>
         <th>删除</th>
     </tr>
     </thead>
     <tbody>
-    <c:forEach items="${products}" var="product" >
+    <c:forEach items="${productRecommends}" var="productRecommend" >
     <tr class="text-c">
         <%--<td><input type="checkbox" value="1" name=""></td>--%>
         <%--<td>1</td>--%>
-            <td>${product.productName}</td>
-            <td>${product.categoryName}</td>
-            <td>${product.userName}</td>
+            <td>${productRecommend.productName}</td>
+            <td>${productRecommend.categoryName}</td>
+            <td>${productRecommend.userName}</td>
             <td >
-                <c:if test="${product.status == 1}">
+                <c:if test="${productRecommend.status == 1}">
                     有效
                 </c:if>
             </td>
-            <td> <fmt:formatDate value="${product.updateTime != null ? product.updateTime:product.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
+            <td> <fmt:formatDate value="${productRecommend.updateTime != null ? productRecommend.updateTime:productRecommend.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
         <td class="td-manage">
-            <a title="删除" href="javascript:;" name="delete" id="${product.id}" class="ml-5" style="text-decoration:none">
+            <a title="修改" href="javascript:;" onclick="admin_edit('设置','/productRecommend/toSetting/update/${productRecommend.productId}.html','1','800','500')"  class="ml-5" style="text-decoration:none">
+                <i class="Hui-iconfont">&#xe6df;</i></a>
+        </td>
+        <td class="td-manage">
+            <a title="删除" href="javascript:;" name="delete" id="${productRecommend.id}" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
         </td>
     </tr>
     </c:forEach>
-    <c:if test="${empty products}">
+    <c:if test="${empty productRecommends}">
         <tr>
             <td colspan="6" style="text-align: center;">暂无推荐产品！</td>
         </tr>
