@@ -2,4 +2,6 @@
 <map open="true">
     <list URL="/article/addOrUpdate.json">
     </list>
+    <list URL="/category/addCategory.json">
+    </list>
 </map>

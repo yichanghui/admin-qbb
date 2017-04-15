@@ -65,6 +65,14 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">类目介绍</label>
+                    <div class="layui-input-block">
+                        <textarea class="layui-textarea layui-hide" name="content" lay-verify="content"   id="LAY_demo_editor"></textarea>
+                    </div>
+                </div>
+
                 <div class="layui-form-item">
                     <div class="layui-input-block">
                         <button class="layui-btn" lay-submit="" lay-filter="demo1">确定</button>
@@ -79,9 +87,23 @@
         layui.use(['form', 'layedit'], function(){
             var form = layui.form()
                     ,layer = layui.layer
-                    ,layedit = layui.layedit
-                    ,laydate = layui.laydate;
-            var laypage = layui.laypage;
+                    ,layedit = layui.layedit;
+
+            layedit.set({
+                uploadImage: {
+                    url: '/newFileUpload/upload.json' //接口url
+                    ,type: 'post' //默认post
+                }
+            });
+            //创建一个编辑器
+            var editIndex = layedit.build('LAY_demo_editor');
+
+            //自定义验证规则
+            form.verify({
+                content: function(value){
+                    layedit.sync(editIndex);
+                }
+            });
 
             //监听提交
             form.on('submit(demo1)', function(data){
