@@ -27,9 +27,17 @@ public class LoginAction {
 	SysAuthService sysAuthService;
 	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String index() {
-		return "index";
+	public String index(HttpServletRequest req) {
+		Object obj =req.getSession().getAttribute("currentUser");
+		if(obj == null){
+			return "login";
+		}else{
+			SysUser currentUser = (SysUser)obj;
+			req.setAttribute("leftMeau",sysAuthService.getLeftAuth(currentUser.getRoleId()));
+			return "index";
+		}
 	}
+
 	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
 	public String welcome() {
 		return "common/welcome";
@@ -58,13 +66,13 @@ public class LoginAction {
 				HttpSession session = req.getSession();
 				session.setAttribute("currentUser", currentUser);
 				String sessionId = session.getId();
-				
+
 				//登录用户的信息放到application
 				ServletContext application = session.getServletContext();
 				Msg.getInstance().put(currentUser.getUserId().toString(),sessionId);
 				application.setAttribute("sessionIdMap",Msg.sessionIdMap);
-				req.setAttribute("leftMeau",sysAuthService.getLeftAuth(currentUser.getRoleId()));
-				return "index";
+//				req.setAttribute("leftMeau",sysAuthService.getLeftAuth(currentUser.getRoleId()));
+				return "redirect:/index.html";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
