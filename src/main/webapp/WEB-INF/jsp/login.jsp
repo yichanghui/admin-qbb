@@ -7,62 +7,73 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <html>
 <head>
 <base href="<%=basePath%>">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>中讯担保</title>
+
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<title>企巴巴</title>
 <link rel="stylesheet" type="text/css" href="css/all.css" />
+
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link href="plugins/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/h-ui.admin/css/H-ui.login.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/h-ui.admin/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+
+<style type="text/css">
+    .header{font-size: 28px;line-height: 60px;background-image: none;color: #fff;}
+</style>
+</head>
+<body>
+<div class="header">&nbsp;企巴巴V1.0后台管理系统</div>
+<div class="loginWraper">
+    <div id="loginform" class="loginBox">
+        <form class="form form-horizontal" action="login.html" method="post">
+            <div class="row cl">
+                <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
+                <div class="formControls col-xs-8">
+                    <input id="userMail" name="userMail" type="text" placeholder="账户" class="input-text size-L">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label>
+                <div class="formControls col-xs-8">
+                    <input id="userPwd" name="userPwd" type="password" placeholder="密码" class="input-text size-L">
+                </div>
+            </div>
+            <%--<div class="row cl">--%>
+                <%--<div class="formControls col-xs-8 col-xs-offset-3">--%>
+                    <%--<input class="input-text size-L" type="text" placeholder="验证码" onblur="if(this.value==''){this.value='验证码'}" onclick="if(this.value=='验证码'){this.value='';}" value="验证码" style="width:150px;">--%>
+                    <%--<img src=""> <a id="kanbuq" href="javascript:;">看不清，换一张</a> </div>--%>
+            <%--</div>--%>
+            <div class="row cl">
+                <%--<div class="formControls col-xs-8 col-xs-offset-3">--%>
+                    <%--<label for="online">--%>
+                        <%--<input type="checkbox" name="online" id="online" value="">使我保持登录状态--%>
+                    <%--</label>--%>
+                <%--</div>--%>
+            </div>
+            <div class="row cl">
+                <div class="formControls col-xs-8 col-xs-offset-3">
+                    <input name="" type="submit" class="btn btn-success radius size-L" value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
+                    <input name="" type="reset" class="btn btn-default radius size-L" value="&nbsp;取&nbsp;&nbsp;&nbsp;&nbsp;消&nbsp;">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="footer">Copyright 企巴巴 </div>
 <script type="text/javascript" src="js/common/jquery/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="js/common/user_login.js"></script>
-<style type="text/css">
-#container{text-align: center;height: 100%;}
-.content{margin:auto auto;position:relative;width:890px;height:254px;background-image: url("images/loginBg.png");}
-.leftInfo{float:left;width:480px;}
-.fontCss_login{font-size:14px;font-family:"微软雅黑","宋体";}
-.formInfo{float:left;padding-top: 51px;height:254px;}
-.submit_reset{width:78px; height:25px; border:none; background-image: url("images/btnBg.jpg");color:#FFFFFF}
-#loginerrorinfo{color:red;height:20px;}
-#loginForm .warm{border:1px solid red;}
-.tdH{height:30px;}
-</style>
-<script type="text/javascript">
-$(function(){
-	locationCenter();
-});
-$(window).resize(function() {
-	locationCenter();
-});
-
-function locationCenter(){
-	var windowobj = $(window);
-	var browserheight = windowobj.height();
-	var	scrollTop = windowobj.scrollTop();
-	$("#container").height(browserheight);
-	$("#content").css("top",(browserheight-270)/2-51);
-}
-</script>
-</head>
-<body bgcolor="#F8F8F8">
-<div id="container">
-<div id="content" class="content">
-<div class="leftInfo">&nbsp;</div>
-<div id="formInfo" class="formInfo">
-<div id="loginerrorinfo"><%=request.getAttribute("loginInfo") %></div>
-<form id="loginForm" method="post" class="loginForm" action="<%=basePath%>login.html">
-<table>
-<tr>
-<td class="tdH"><span class="fontCss_login">用户名：</span></td><td><input id="userMail" type="text" class="inputCss" name="userMail" value=""></td>
-</tr>
-<tr>
-<td class="tdH"><span class="fontCss_login">密　码：</span></td><td><input id="userPwd" type="password" class="inputCss" name="userPwd" value=""></td>
-</tr>
-<tr>
-<td class="tdH" colspan="2"><button id="submit_login" class="submit_reset" type="button">登录</button>　<button id="reset_login" class="submit_reset" type="button">重填</button></td>
-</tr>
-</table>
-</form>
-</div>
-<div style="clear:both;"></div>
-<div id="Copyright">中讯担保 &copy; 2017 hiveview.com</div>
-</div>
-</div>
 </body>
 </html>
