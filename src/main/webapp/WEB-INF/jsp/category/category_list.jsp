@@ -8,8 +8,12 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
-	<link rel="Bookmark" href="/favicon.ico" >
 	<link rel="Shortcut Icon" href="/favicon.ico" />
+	<style>
+		.color1{color:#FF5722}
+		.color2{color:#F7B824}
+		.color3{color:#5FB878}
+	</style>
 	<![endif]-->
 	<jsp:include page="../common/static.jsp"></jsp:include>
 	<![endif]-->
@@ -20,11 +24,21 @@
 <div class="page-container">
 	<div class="text-c">
 		<form class="layui-form" action="" >
-
 				<div class="layui-inline">
 					<label class="layui-form-label">类目名称</label>
 					<div class="layui-input-inline">
 						<input type="text" name="categoryName" id="categoryName" class="layui-input">
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">类目级别</label>
+						<div class="layui-input-inline">
+							<select  lay-filter="statusSearch" name="categoryLevel" id="categoryLevel">
+								<option value="-1">全部</option>
+								<option value="1" >一级类目</option>
+								<option value="2" >二级类目</option>
+								<option value="3" >三级类目</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			<button type="button"  class="btn btn-success"  id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
@@ -36,9 +50,9 @@
 		<%--<button class="layui-btn" lay-submit="" lay-filter="demo1" >搜索</button>--%>
 		<%--</div>--%>
 		</form>
-	</div>
 	<div id="dataMsg"></div>
 	<div id="categoryPager"></div>
+</div>
 </div>
 <!--_footer 作为公共模版分离出去-->
 <jsp:include page="../common/static-js.jsp"></jsp:include>
@@ -57,7 +71,7 @@
 					, layedit = layui.layedit
 					, laydate = layui.laydate;
 			//以下将以jquery.ajax为例，演示一个异步分页
-			var pageSize = 5;
+			var pageSize = 15;
 
 			function paging(curr) {
 				var categoryLevel = $("#categoryLevel").val();

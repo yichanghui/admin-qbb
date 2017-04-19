@@ -14,13 +14,12 @@
     <tr class="text-c">
         <%--<th width="25"><input type="checkbox" name="" value=""></th>--%>
         <%--<th width="40">ID</th>--%>
-        <th>类目名称</th>
+        <th style="text-align: left;">类目名称</th>
         <th>类目等级</th>
-        <th>类目code</th>
+        <%--<th>类目code</th>--%>
         <th>更新时间</th>
-        <th>添加子类目</th>
-        <th>设置</th>
-        <th>删除</th>
+        <th>添加子级类目</th>
+        <th>操作</th>
     </tr>
     </thead>
     <tbody>
@@ -28,21 +27,37 @@
     <tr class="text-c">
         <%--<td><input type="checkbox" value="1" name=""></td>--%>
         <%--<td>1</td>--%>
-            <td>${category.name}</td>
-            <td>${category.level}</td>
-            <td>${category.code}</td>
-            <td> <fmt:formatDate value="${category.updateTime != null ? category.updateTime:category.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
+            <td style="text-align: left;">
+                <span class="color${category.level}">
+                <c:if test="${category.level==2}">
+                    &nbsp;&nbsp;&nbsp;|—
+                </c:if>
+                <c:if test="${category.level==3}">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|—
+                </c:if>
+                <c:if test="${category.level==4}">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|—
+                </c:if>
+                        ${category.name}
+                </span>
+            </td>
+            <td> <span class="color${category.level}">${category.level}级类目</span></td>
+            <%--<td>${category.code}</td>--%>
+            <td>
+                 <span class="color${category.level}"><fmt:formatDate value="${category.updateTime != null ? category.updateTime:category.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></span>
+            </td>
         <td class="td-manage">
             <a title="添加子类目" href="javascript:void(0);" onclick="admin_edit('添加子类目','/category/toAdd/${category.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
-                <i class="Hui-iconfont">&#xe6df;</i></a>
+                <i class="Hui-iconfont" style="color: blue;">添加子级类目</i>
+            </a>
         </td>
         <td class="td-manage">
             <a title="编辑" href="javascript:void(0);" onclick="admin_edit('设置','/category/toSetting/${category.id}.html','1','800','500')" class="ml-5" style="text-decoration:none">
-                <i class="Hui-iconfont">&#xe6df;</i></a>
-        </td>
-        <td class="td-manage">
+                <i class="Hui-iconfont">&#xe6df;</i>
+            </a>
             <a title="删除" href="javascript:void(0);" name="delete" code="${category.code}" class="ml-5" style="text-decoration:none">
-                <i class="Hui-iconfont">&#xe6df;</i></a>
+                <i class="Hui-iconfont">&#xe6e2;</i>
+            </a>
         </td>
     </tr>
     </c:forEach>
