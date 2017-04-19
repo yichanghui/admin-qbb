@@ -49,7 +49,6 @@ public class SysUserService {
 	
 	/**
 	 * 获取所有系统用户
-	 * @param isEffective
 	 * @return
 	 */
 	public ScriptPage getSysUserByAll(AjaxPage ajaxPage){
@@ -71,8 +70,11 @@ public class SysUserService {
 	 * @return
 	 */
 	public int updateSysUser(SysUser user){
-		if(null!=user.getUserPwd())
+		if(null!=user.getUserPwd()&&!"".equals(user.getUserPwd()))
 			user.setUserPwd(DigestUtils.md5DigestAsHex(user.getUserPwd().getBytes()));
+		if(null==user.getUserPwd()||"".equals(user.getUserPwd())){
+			user.setUserPwd(null);
+		}
 		SysUser u = new SysUser();
 		if(user.getUserMail()==null){
 			return sysUserDao.updateSysUser(user);

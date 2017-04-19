@@ -147,7 +147,7 @@ function initDataGrid(){
 function generateDialog(rowInfo){
 	$('#userId').val(rowInfo.userId);
 	$('#userName').val(rowInfo.userName);
-	$('#userPwd').val(rowInfo.userPwd);
+	// $('#userPwd').val(rowInfo.userPwd);
 	$('#userMail').val(rowInfo.userMail);
 	$('#oldUserMail').val(rowInfo.userMail);
 	$('#roleId').val(rowInfo.roleId);
