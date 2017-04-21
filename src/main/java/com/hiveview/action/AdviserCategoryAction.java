@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import utils.IssueType;
 import utils.StatusUtil;
 import utils.log.LogMgr;
 
@@ -22,16 +23,17 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/category")
-public class CategoryAction extends BaseController {
+@RequestMapping("/adviserCategory")
+public class AdviserCategoryAction extends BaseController {
 
     @Autowired
     private ICategoryService categoryService;
 
 
+
     @RequestMapping(value="/list")
     public String list() {
-        return "category/category_list";
+        return "adviserCategory/category_list";
     }
 
     @RequestMapping(value="/page")
@@ -47,11 +49,12 @@ public class CategoryAction extends BaseController {
                 category.setLevel(Integer.parseInt(categoryLevel));
         }
         Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
+        category.setType(IssueType.ADVISER.getVal());
         List<Category> categorys =  categoryService.getCategory(category);
         paging.setTotalPages(page.getPages());
         mav.getModel().put("paging",paging);
         mav.getModel().put("categorys",categorys);
-        mav.setViewName("category/paging");
+        mav.setViewName("adviserCategory/paging");
         return mav;
     }
 
@@ -106,7 +109,7 @@ public class CategoryAction extends BaseController {
             Category parentCategory = categoryService.getCategoryById(parentId);
             mav.getModel().put("parentCategory", parentCategory);
         }
-        mav.setViewName("category/category_add");
+        mav.setViewName("adviserCategory/category_add");
         return mav;
     }
     /**
@@ -118,6 +121,7 @@ public class CategoryAction extends BaseController {
     public Boolean addCategory(Category category) {
         Boolean flag = false;
         try {
+            category.setType(IssueType.ADVISER.getVal());
             categoryService.saveCategory(category);
             flag = true;
         } catch (Exception e) {
@@ -135,7 +139,7 @@ public class CategoryAction extends BaseController {
     public ModelAndView toSetting(@PathVariable("id") long id,ModelAndView mav) {
         Category category = categoryService.getCategoryAndAttr(id);
         mav.getModel().put("category", category);
-        mav.setViewName("category/setting");
+        mav.setViewName("adviserCategory/setting");
         return mav;
     }
 
