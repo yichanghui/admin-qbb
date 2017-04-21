@@ -7,6 +7,7 @@ import com.hiveview.action.base.BaseController;
 import com.hiveview.entity.ApprovalRecord;
 import com.hiveview.entity.Paging;
 import com.hiveview.entity.Need;
+import com.hiveview.entity.UserNeed;
 import com.hiveview.service.IApprovalRecordService;
 import com.hiveview.service.INeedService;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +22,9 @@ import utils.log.LogMgr;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/need")
@@ -65,6 +68,35 @@ public class NeedAction extends BaseController {
         mav.getModel().put("paging",paging);
         mav.getModel().put("needs",needs);
         mav.setViewName("need/paging");
+        return mav;
+    }
+
+
+    /**
+     * 会员留言管理入口页面地址
+     * @return
+     */
+    @RequestMapping(value="/toUserNeedList")
+    public String toUserNeedList() {
+        return "userNeed/userneed_list";
+    }
+
+    /**
+     * 会员留言列表
+     * @param request
+     * @param mav
+     * @return
+     */
+    @RequestMapping(value="/userNeedPage")
+    public ModelAndView userNeedPage(HttpServletRequest request, ModelAndView mav) {
+        Paging paging = super.getPaging(request);
+        Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
+        Map<String,Object> map = new HashMap<String,Object>();
+        List<Map<String,Object>> needs =  needService.getLiuYanList(map);
+        paging.setTotalPages(page.getPages());
+        mav.getModel().put("paging",paging);
+        mav.getModel().put("needs",needs);
+        mav.setViewName("userNeed/userneed_paging");
         return mav;
     }
 

@@ -29,7 +29,7 @@
 					 <ul>
 					 <c:forEach var="chlidAuth" items="${leftMeau}">
 						<c:if test="${sysAuth.authId==chlidAuth.pid}">
-							<li><a data-href="${chlidAuth.authAction}" data-title="品牌管理" href="javascript:void(0)">${chlidAuth.authName}</a></li>
+							<li><a data-href="${chlidAuth.authAction}" data-title="${chlidAuth.authName}" href="javascript:void(0)">${chlidAuth.authName}</a></li>
 						</c:if>
 					 </c:forEach>
 					 </ul>
