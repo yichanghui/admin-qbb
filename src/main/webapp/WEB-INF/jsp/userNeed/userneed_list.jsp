@@ -62,7 +62,7 @@
                 ,layedit = layui.layedit
                 ,laydate = layui.laydate;
             //以下将以jquery.ajax为例，演示一个异步分页
-            var pageSize = 5;
+            var pageSize = 15;
             function paging(curr){
 				var statusSearch = $("#statusSearch").val();
 				statusSearch = statusSearch == -1 ? "" : statusSearch;
