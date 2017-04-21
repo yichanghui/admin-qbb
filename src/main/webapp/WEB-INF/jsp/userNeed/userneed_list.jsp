@@ -20,23 +20,23 @@
 <div class="page-container">
 	<div class="text-c">
 		<form class="layui-form" action="" id="needForm">
-		<div class="layui-form-item">
-			<div class="layui-inline">
-			<label class="layui-form-label">需求状态</label>
-			<div class="layui-input-inline">
-				<select  lay-filter="statusSearch" id="statusSearch">
-					<option value="-1">全部</option>
-					<%--<option value="宁波"selected="" disabled="">宁波</option>--%>
-					<option value="3" >审核中</option>
-					<option value="4" >审核成功</option>
-					<option value="5" >审核失败</option>
-					<option value="6" >下架</option>
-					<option value="7" >关闭</option>
-				</select>
-			</div>
-			</div>
-			<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>
-		</div>
+		<%--<div class="layui-form-item">--%>
+			<%--<div class="layui-inline">--%>
+			<%--<label class="layui-form-label">需求状态</label>--%>
+			<%--<div class="layui-input-inline">--%>
+				<%--<select  lay-filter="statusSearch" id="statusSearch">--%>
+					<%--<option value="-1">全部</option>--%>
+					<%--&lt;%&ndash;<option value="宁波"selected="" disabled="">宁波</option>&ndash;%&gt;--%>
+					<%--<option value="3" >审核中</option>--%>
+					<%--<option value="4" >审核成功</option>--%>
+					<%--<option value="5" >审核失败</option>--%>
+					<%--<option value="6" >下架</option>--%>
+					<%--<option value="7" >关闭</option>--%>
+				<%--</select>--%>
+			<%--</div>--%>
+			<%--</div>--%>
+			<%--<button type="button"  class="btn btn-success" name="" id="search" ><i class="Hui-iconfont">&#xe665;</i>搜索</button>--%>
+		<%--</div>--%>
 		<%--<div class="layui-input-block">--%>
 		<%--<button class="layui-btn" lay-submit="" lay-filter="demo1" >搜索</button>--%>
 		<%--</div>--%>
