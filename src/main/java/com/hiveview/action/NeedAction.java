@@ -8,6 +8,7 @@ import com.hiveview.entity.ApprovalRecord;
 import com.hiveview.entity.Paging;
 import com.hiveview.entity.Need;
 import com.hiveview.entity.UserNeed;
+import com.hiveview.entity.bo.Data;
 import com.hiveview.service.IApprovalRecordService;
 import com.hiveview.service.INeedService;
 import org.apache.commons.lang.StringUtils;
@@ -21,10 +22,7 @@ import utils.IssueType;
 import utils.log.LogMgr;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/need")
@@ -80,6 +78,22 @@ public class NeedAction extends BaseController {
     public String toUserNeedList() {
         return "userNeed/userneed_list";
     }
+
+    /**
+     * 会员留言管理入口（删除操作）
+     * @return
+     */
+    @RequestMapping(value="/deleteUserNeedByIds")
+    public @ResponseBody  Data deleteUserNeedByIds(HttpServletRequest req,String ids) {
+        List<Integer> idList = new ArrayList<Integer>();
+        String []idArray = ids.split(",");
+        for (String id : idArray){
+            idList.add(Integer.parseInt(id));
+        }
+        needService.deleteUserNeedByIds(idList);
+        return new Data(200,"success");
+    }
+
 
     /**
      * 会员留言列表
