@@ -9,7 +9,7 @@
 <table class="table table-border table-bordered table-bg">
     <thead>
     <tr>
-        <th scope="col" colspan="9">类目列表</th>
+        <th scope="col" colspan="9">需求类目列表</th>
     </tr>
     <tr class="text-c">
         <%--<th width="25"><input type="checkbox" name="" value=""></th>--%>
