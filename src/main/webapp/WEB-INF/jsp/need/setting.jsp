@@ -32,8 +32,8 @@
                     <label class="layui-form-label">需求费用类型</label>
                     <div class="layui-input-inline">
                         <select  name="recommend"  >
-                            <option value="0" <c:if test="${need.chargeType == 8}">selected=""</c:if> >免费</option>
-                            <option value="5" <c:if test="${need.chargeType == 9}">selected=""</c:if> >收费</option>
+                            <option value="8" <c:if test="${need.chargeType == 8}">selected=""</c:if> >免费</option>
+                            <option value="9" <c:if test="${need.chargeType == 9}">selected=""</c:if> >收费</option>
                         </select>
                     </div>
                 </div>
