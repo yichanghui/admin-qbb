@@ -70,6 +70,7 @@
                         pageSize : pageSize
                     },
                     success: function(data){
+                    	console.log(data);
                         $("#dataMsg").html(data);
                         var totalPages = $("#totalPages").val();
                         //显示分页
@@ -98,7 +99,19 @@
 
 	/*管理员-编辑*/
 	function admin_edit(title,url,id,w,h){
-		layer_show(title,url,w,h);
+		//layer_show(title,url,w,h);
+		layer.open({
+		      type: 2,
+		      title: title,
+		      shadeClose: false,
+		      shade: 0.2,
+		      maxmin: true, //开启最大化最小化按钮
+		      area: [w+'px', h+'px'],
+		      content: url,
+		      end:function(){
+		    	  paging();
+		      }
+		    });
 	}
     
     
