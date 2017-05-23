@@ -16,6 +16,7 @@
         <th>加入时间</th>
         <th>公司地址</th>
         <th>顾问数量</th>
+        <th>编辑</th>
     </tr>
     </thead>
     <tbody>
@@ -27,11 +28,14 @@
             <td> <fmt:formatDate value="${company.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
     		<td>${company.address}</td>
     		<td>${company.membercount}</td>
+    		<td><a title="编辑" href="javascript:;" onclick="admin_edit('编辑','/company/toSetting/${company.id }.html','1','800','500')" class="ml-5" style="text-decoration:none">
+                <i class="Hui-iconfont">&#xe6df;</i></a>
+    		</td>
     </tr>
     </c:forEach>
     <c:if test="${empty companys}">
         <tr>
-            <td colspan="4" style="text-align: center;">暂无公司！</td>
+            <td colspan="5" style="text-align: center;">暂无公司！</td>
         </tr>
     </c:if>
     </tbody>

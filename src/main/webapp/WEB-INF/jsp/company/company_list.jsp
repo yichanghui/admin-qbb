@@ -107,6 +107,7 @@
 <script type="text/javascript">
 $(function(){
 	queryCompanyByName();
+	sendUpdateCompanyPage();
 });
 /**
  * 通过公司名称查询公司
@@ -132,6 +133,18 @@ function queryCompanyByName(){
 		}
 	});
 }
+
+/**
+ *通过公司id修改公司信息 
+ *——李文辉
+ */
+function sendUpdateCompanyPage(){
+	$(document).on("click",".updatecompany",function(){
+		var id=$(this).attr("companyid");
+		alert(id);
+	});
+}
+
 </script>
 </body>
 </html>
