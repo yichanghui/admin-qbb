@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.StringUtil;
 import com.hiveview.action.base.BaseController;
 import com.hiveview.entity.Area;
 import com.hiveview.entity.Company;
@@ -32,6 +33,7 @@ import com.hiveview.entity.Paging;
 import com.hiveview.service.IAreaService;
 import com.hiveview.service.ICompanyService;
 
+import utils.MemberType;
 import utils.log.LogMgr;
 
 /**
@@ -70,7 +72,7 @@ public class CompanyAction extends BaseController{
 	    @RequestMapping("/companyListData")
 	    public ModelAndView queryCompanyListData(HttpServletRequest request,ModelAndView mav){
 	    	Paging paging=super.getPaging(request);
-	    	 Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
+	    	Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
 	    	List<Company> companys = companyService.queryCompanyList();
 	    	paging.setTotalPages(page.getPages());
 	    	mav.getModel().put("paging", paging);
@@ -80,7 +82,7 @@ public class CompanyAction extends BaseController{
 	    }
 	    
 	    /**
-	     *  @功能:通过公司名称查询公司信息
+	     *  @功能:通过公司名称查询公司信息,模糊查询并分页
 	     *  @作者:李文辉 
 	     *  @代号:ab
 	     *  @时间:2017年5月23日
@@ -91,7 +93,11 @@ public class CompanyAction extends BaseController{
 	     */
 	    @RequestMapping("/queryCompanyByName")
 	    public ModelAndView queryCompanyByName(HttpServletRequest request,ModelAndView mav,String companyName){
+	    	Paging paging = super.getPaging(request);
+	    	Page<Object> page = PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
 	    	List<Company> companys = companyService.queryCompanyListByName(companyName);
+	    	paging.setTotalPages(page.getPages());
+	    	mav.getModel().put("paging", paging);
 	    	mav.getModel().put("companys", companys);
 	    	mav.setViewName("company/company_paging");
 	    	return mav;

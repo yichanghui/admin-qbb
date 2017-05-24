@@ -28,7 +28,7 @@
             <td> <fmt:formatDate value="${company.addTime}"   pattern="yyyy-MM-dd HH:mm:ss" type="date" dateStyle="long" /></td>
     		<td>${company.address}</td>
     		<td>${company.membercount}</td>
-    		<td><a title="编辑" href="javascript:;" onclick="admin_edit('编辑','/company/toSetting/${company.id }.html','1','800','500')" class="ml-5" style="text-decoration:none">
+    		<td><a title="编辑" href="javascript:;" onclick="admin_edit('编辑','/company/toSetting/${company.id }.html',2,'800','500')" class="ml-5" style="text-decoration:none">
                 <i class="Hui-iconfont">&#xe6df;</i></a>
     		</td>
     </tr>

@@ -45,13 +45,21 @@
 					<textarea name="address" style="width: 80%" placeholder="请输入内容" class="layui-textarea">${company.address}</textarea>
 				</div>
 			</div>
-
-			<div class="layui-form-item layui-form-text">
+			
+			<div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">一句话简介</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="summary" value="${company.summary}" class="layui-input">
+                        </div>
+                    </div>
+            </div>
+			<%-- <div class="layui-form-item layui-form-text">
 				<label class="layui-form-label">一句话简介</label>
 				<div class="layui-input-block">
 					<textarea name="summary" style="width: 80%" placeholder="请输入内容" class="layui-textarea">${company.summary}</textarea>
 				</div>
-			</div>
+			</div> --%>
 			
 			<div class="layui-form-item layui-form-text">
 				<label class="layui-form-label">公司介绍</label>
@@ -88,7 +96,7 @@
                     if (data) {
                         parent.layer.closeAll();
                     } else {
-                        layer.msg("失败！");
+              	     	layer.msg("失败！");
                     }
                 }
             });

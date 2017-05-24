@@ -100,18 +100,30 @@
 	/*管理员-编辑*/
 	function admin_edit(title,url,id,w,h){
 		//layer_show(title,url,w,h);
+		if (title == null || title == '') {
+			title=false;
+		};
+		if (url == null || url == '') {
+			url="404.html";
+		};
+		if (w == null || w == '') {
+			w=800;
+		};
+		if (h == null || h == '') {
+			h=($(window).height() - 50);
+		};
 		layer.open({
-		      type: 2,
+		      type: id,
 		      title: title,
 		      shadeClose: false,
-		      shade: 0.2,
+		      shade: 0.4,
 		      maxmin: true, //开启最大化最小化按钮
 		      area: [w+'px', h+'px'],
 		      content: url,
 		      end:function(){
 		    	  paging();
 		      }
-		    });
+		 });
 	}
     
     
@@ -120,7 +132,7 @@
 <script type="text/javascript">
 $(function(){
 	queryCompanyByName();
-	sendUpdateCompanyPage();
+	//sendUpdateCompanyPage();
 });
 /**
  * 通过公司名称查询公司
@@ -130,7 +142,46 @@ function queryCompanyByName(){
 	$("#search").on("click",function(){
 		var companyname= $("#companyName").val().replace(/\s+/g,"");
 		if(companyname.length>0){
-			$.ajax({
+			
+			layui.use(['form','laypage', 'layer'], function(){
+	            var laypage = layui.laypage
+	                ,layer = layui.layer;
+
+	            var form = layui.form()
+	                ,layedit = layui.layedit
+	                ,laydate = layui.laydate;
+	            //以下将以jquery.ajax为例，演示一个异步分页
+	            var pageSize = 5;
+	            paging();
+	            function paging(curr){
+	                $.ajax({
+	                    type: "POST",
+	                    url: "/company/queryCompanyByName.html",
+	                    data: {
+	                        currentPage :curr || 1,
+	                        pageSize : pageSize,
+	                        companyName:companyname
+	                    },
+	                    success: function(data){
+	                        $("#dataMsg").html(data);
+	                        var totalPages = $("#totalPages").val();
+	                        //显示分页
+	                        laypage({
+	                            cont: 'companyPager', //容器。值支持id名、原生dom对象，jquery对象。【如该容器为】：<div id="page1"></div>
+	                            pages: totalPages, //通过后台拿到的总页数
+	                            curr: curr || 1, //当前页
+	                            groups: 5 ,//连续显示分页数
+	                            jump: function(obj, first){ //触发分页后的回调
+	                                if(!first){ //点击跳页触发函数自身，并传递当前页：obj.curr
+	                                    paging(obj.curr);
+	                                }
+	                            }
+	                        });
+	                    }
+	                });
+	            };
+	        });
+			/* $.ajax({
                 type: "POST",
                 url:'/company/queryCompanyByName.html',
                 data: {
@@ -140,7 +191,7 @@ function queryCompanyByName(){
                     $("#dataMsg").html(data);
                     $("#companyPager").html("");
                 }
-            });
+            }); */
           }else{
         	  paging();
 		}
@@ -151,13 +202,13 @@ function queryCompanyByName(){
  *通过公司id修改公司信息 
  *——李文辉
  */
-function sendUpdateCompanyPage(){
+/* function sendUpdateCompanyPage(){
 	$(document).on("click",".updatecompany",function(){
 		var id=$(this).attr("companyid");
 		alert(id);
 	});
 }
-
+ */
 </script>
 </body>
 </html>
